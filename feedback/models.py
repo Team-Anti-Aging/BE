@@ -10,7 +10,6 @@ class Feedback(models.Model):
         ('completed', '완료'),
         ('rejected', '반려'),
     ]
-    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedback')
     walktrail = models.ForeignKey(WalkTrail, on_delete=models.SET_NULL, null=True, blank=True, related_name='feedback')
     location = models.TextField()
