@@ -11,7 +11,7 @@ class Feedback(models.Model):
         ('rejected', '반려'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedback')
-    walktrail = models.ForeignKey(WalkTrail, on_delete=models.SET_NULL, null=True, blank=True, related_name='feedback')
+    walktrail = models.ForeignKey(WalkTrail, on_delete=models.CASCADE, related_name='feedback')
     location = models.TextField()
     type = models.CharField(max_length=20)
     category = models.CharField(max_length=20)
