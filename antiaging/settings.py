@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'feedback',
     'accounts',
     'walktrails',
+    'admin_func',
     'rest_framework',                  # djangorestframework
     'rest_framework.authtoken',         # djangorestframework (optional, 권장)
     'rest_framework_simplejwt.token_blacklist',  # djangorestframework_simplejwt (optional, 권장)
