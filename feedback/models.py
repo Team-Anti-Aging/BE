@@ -1,7 +1,7 @@
 from django.db import models
 
 from django.db import models
-from accounts.models import User, Admin
+from accounts.models import User
 from walktrails.models import WalkTrail
 
 class Feedback(models.Model):
@@ -23,7 +23,7 @@ class Feedback(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     # 응답 관련 필드
-    admin = models.ForeignKey(Admin, on_delete=models.SET_NULL, null=True, blank=True, related_name='responses')
+    # admin = models.ForeignKey(Admin, on_delete=models.SET_NULL, null=True, blank=True, related_name='responses')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress')
     response_content = models.TextField(blank=True, null=True)
     responded_at = models.DateTimeField(blank=True, null=True)
