@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,11 +47,14 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',         # djangorestframework (optional, 권장)
     'rest_framework_simplejwt.token_blacklist',  # djangorestframework_simplejwt (optional, 권장)
     'dj_rest_auth',                    # dj-rest-auth
+    'dj_rest_auth.registration',
     'allauth',                         # django-allauth
     'allauth.account',                 # django-allauth
     'allauth.socialaccount',           # django-allauth
     'drf_yasg',                        # drf-yasg
     'corsheaders',
+    # simple-jwt 관련
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +140,65 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_AUTH = {
+    'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
+    'TOKEN_SERIALIZER': 'dj_rest_auth.serializers.TokenSerializer',
+    'JWT_SERIALIZER': 'dj_rest_auth.serializers.JWTSerializer',
+    'JWT_SERIALIZER_WITH_EXPIRATION': 'dj_rest_auth.serializers.JWTSerializerWithExpiration',
+    'JWT_TOKEN_CLAIMS_SERIALIZER': 'rest_framework_simplejwt.serializers.TokenObtainPairSerializer',
+    # 'USER_DETAILS_SERIALIZER': 'dj_rest_auth.serializers.UserDetailsSerializer',
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserDetailSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'dj_rest_auth.serializers.PasswordResetSerializer',
+    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'dj_rest_auth.serializers.PasswordResetConfirmSerializer',
+    'PASSWORD_CHANGE_SERIALIZER': 'dj_rest_auth.serializers.PasswordChangeSerializer',
+
+    # 'REGISTER_SERIALIZER': 'dj_rest_auth.registration.serializers.RegisterSerializer',
+    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+
+    'REGISTER_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
+
+    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
+    'TOKEN_CREATOR': 'dj_rest_auth.utils.default_create_token',
+
+    'PASSWORD_RESET_USE_SITES_DOMAIN': False,
+    'OLD_PASSWORD_FIELD_ENABLED': False,
+    'LOGOUT_ON_PASSWORD_CHANGE': False,
+    'SESSION_LOGIN': True,
+    'USE_JWT': True, #이부분
+
+    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_REFRESH_COOKIE': None,
+    'JWT_AUTH_REFRESH_COOKIE_PATH': '/',
+    'JWT_AUTH_SECURE': False,
+    'JWT_AUTH_HTTPONLY': False, #이부분
+    'JWT_AUTH_SAMESITE': 'Lax',
+    'JWT_AUTH_RETURN_EXPIRATION': False,
+    'JWT_AUTH_COOKIE_USE_CSRF': False,
+    'JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED': False,
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_REQUIRED = True
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1), # 액세스 토큰의 유효기간
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # 리프레시 토큰의 유효기간
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+}
