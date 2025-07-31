@@ -18,6 +18,7 @@ class Route(models.Model):
     name = models.CharField(max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    order = models.IntegerField()
 
     def __str__(self):
         return f"{self.trail.name} - ({self.latitude}, {self.longitude})"
