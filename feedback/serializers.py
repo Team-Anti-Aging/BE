@@ -1,11 +1,13 @@
-from rest_framework import serializers
-
 # feedback/serializers.py
 
 from rest_framework import serializers
 from .models import Feedback
+from admin_func.serializers import ResponseSerializer
+
 
 class FeedbackSerializer(serializers.ModelSerializer):
+    responses = ResponseSerializer(many=True, read_only=True)
+
     class Meta:
         model = Feedback
         fields = [
@@ -21,17 +23,12 @@ class FeedbackSerializer(serializers.ModelSerializer):
             'feedback_image',
             'created_at',
             'updated_at',
-            'admin',
-            'status',
-            'response_content',
-            'responded_at',
-            'response_image',
+            'responses', # 역참조
         ]
         read_only_fields = [
             'id',
             'created_at',
             'updated_at',
-            'responded_at',
         ]
 
     def __str__(self):
@@ -48,8 +45,8 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
             'category',
             'latitude',
             'longitude',
-            'feedback_content',
-            'feedback_image',
+            # 'feedback_content',   # 역참조 이슈 + 이게 만들때 왜 있어야 되지
+            # 'feedback_image',
         ]
 
     def create(self, validated_data):
@@ -57,22 +54,22 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         return Feedback.objects.create(user=user, **validated_data)
 
-class FeedbackResponseSerializer(serializers.ModelSerializer):
+class FeedbackResponseSerializer(serializers.ModelSerializer):  # 애초에 이걸 response에서 해야할 거 같은데
     class Meta:
         model = Feedback
         fields = [
             'status',
-            'response_content',
-            'responded_at',
-            'response_image',
+            # 'response_content',   # 역참조 이슈
+            # 'responded_at',
+            # 'response_image',
         ]
 
     def update(self, instance, validated_data):
         admin = self.context['request'].user
-        instance.admin = admin  # 관리자는 request.user로 설정
+        # instance.admin = admin  # 관리자는 request.user로 설정    # instance에 admin 없음
         instance.status = validated_data.get('status', instance.status)
-        instance.response_content = validated_data.get('response_content', instance.response_content)
-        instance.responded_at = validated_data.get('responded_at')
-        instance.response_image = validated_data.get('response_image', instance.response_image)
+        # instance.response_content = validated_data.get('response_content', instance.response_content)
+        # instance.responded_at = validated_data.get('responded_at')
+        # instance.response_image = validated_data.get('response_image', instance.response_image)
         instance.save()
         return instance
