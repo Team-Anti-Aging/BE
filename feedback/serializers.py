@@ -45,8 +45,8 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
             'category',
             'latitude',
             'longitude',
-            # 'feedback_content',   # 역참조 이슈 + 이게 만들때 왜 있어야 되지
-            # 'feedback_image',
+            'feedback_content',
+            'feedback_image',
         ]
 
     def create(self, validated_data):
