@@ -4,7 +4,7 @@ from rest_framework import serializers
 from .models import User
 
 class CustomRegisterSerializer(RegisterSerializer):
-    _has_phone_field = False
+    _has_phone_field = False    # 일단 false
     nickname = serializers.CharField(max_length=50)
     
     def get_cleaned_data(self):
