@@ -3,6 +3,7 @@
 from rest_framework import serializers
 from .models import WalkTrail, Route
 
+# route 테이블 관련
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Route
@@ -12,6 +13,8 @@ class SimpleRouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Route
         fields = ['name']
+
+# walktrail 테이블 관련
 class WalkTrailSerializer(serializers.ModelSerializer):
     # 산책로 정보(리스트 나열용)
     class Meta:
