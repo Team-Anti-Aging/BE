@@ -8,17 +8,17 @@ from . import serializers
 from . import models
 
 # Create your views here.
+class GetRouteAll(generics.ListAPIView):
+    # 전체 산책로 좌표정보 받아오기 / 관리자용
+    queryset = models.WalkTrail.objects.all()
+    serializer_class = serializers.WalkTrailRouteSerializer
+    pagination_class = None
+
 class WalkTrail_list(generics.ListAPIView):
     # walktrail 리스트 조회
     queryset = models.WalkTrail.objects.all()
     serializer_class = serializers.WalkTrailSerializer
     pagination_class = None
-
-class WalkTrail_info(generics.RetrieveAPIView):
-    # walktrail 정보 조회
-    queryset = models.WalkTrail.objects.all()
-    serializer_class = serializers.WalkTrailInfoSerializer
-    lookup_url_kwarg = 'name'    
 
 class GetRoute(generics.RetrieveAPIView):
     # 해당 산책로 좌표정보 받아오기
@@ -27,8 +27,11 @@ class GetRoute(generics.RetrieveAPIView):
     lookup_field = 'name'
     lookup_url_kwarg = 'name'
 
-class GetRouteAll(generics.ListAPIView):
-    # 전체 산책로 좌표정보 받아오기 / 관리자용
+class WalkTrail_info(generics.RetrieveAPIView):
+    # walktrail 정보 조회
     queryset = models.WalkTrail.objects.all()
-    serializer_class = serializers.WalkTrailRouteSerializer
-    pagination_class = None
+    serializer_class = serializers.WalkTrailInfoSerializer
+    lookup_field = 'name'
+    lookup_url_kwarg = 'name'
+
+
