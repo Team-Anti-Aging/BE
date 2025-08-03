@@ -17,18 +17,11 @@ class GetRouteAll(generics.ListAPIView):
 class WalkTrail_list(generics.ListAPIView):
     # walktrail 리스트 조회
     queryset = models.WalkTrail.objects.all()
-    serializer_class = serializers.WalkTrailSerializer
+    serializer_class = serializers.WalkTrailListSerializer
     pagination_class = None
 
-class GetRoute(generics.RetrieveAPIView):
-    # 해당 산책로 좌표정보 받아오기
-    queryset = models.WalkTrail.objects.all()
-    serializer_class = serializers.WalkTrailRouteSerializer
-    lookup_field = 'name'
-    lookup_url_kwarg = 'name'
-
 class WalkTrail_info(generics.RetrieveAPIView):
-    # walktrail 정보 조회
+    # 특정 산책로 정보 조회
     queryset = models.WalkTrail.objects.all()
     serializer_class = serializers.WalkTrailInfoSerializer
     lookup_field = 'name'
