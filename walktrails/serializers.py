@@ -7,33 +7,22 @@ from .models import WalkTrail, Route
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Route
-        fields = ['name', 'latitude', 'longitude']
-
-class SimpleRouteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Route
-        fields = ['name']
+        fields = ['latitude', 'longitude']
 
 # walktrail 테이블 관련
-class WalkTrailSerializer(serializers.ModelSerializer):
-    # 산책로 정보(리스트 나열용)
+class WalkTrailListSerializer(serializers.ModelSerializer):
+    # 산책로 리스트
     class Meta:
         model = WalkTrail
         fields = ['name', 'duration', 'distance_km']
 
 class WalkTrailInfoSerializer(serializers.ModelSerializer):
-    # 산책로 선택 페이지(정보)
-    routes = serializers.SerializerMethodField()
-
+    routes = RouteSerializer(many = True)
+    # 특정 산책로 정보 조회
     class Meta:
         model = WalkTrail
-        fields = ['name', 'duration', 'distance_km', 'description', 'routes']
+        fields = ['name', 'duration', 'distance_km', 'description', 'checkpoint', 'routes']
 
-    def get_routes(self, obj):
-        queryset = obj.routes.all().order_by('order')
-        filtered = queryset[0::5]  # 0부터 5개씩 띄엄띄엄
-        return SimpleRouteSerializer(filtered, many=True).data
-    
 class WalkTrailRouteSerializer(serializers.ModelSerializer):
     # 산책로 루트 출력
     routes = RouteSerializer(many = True)

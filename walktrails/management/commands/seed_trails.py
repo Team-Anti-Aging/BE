@@ -24,6 +24,7 @@ class Command(BaseCommand):
                     'duration': trail_data['duration'],
                     'distance_km': trail_data['distance_km'],
                     'description': trail_data['description'],
+                    'checkpoint' : trail_data['checkpoint']
                 }
             )
 
@@ -33,7 +34,6 @@ class Command(BaseCommand):
             for i, route in enumerate(trail_data['routes']):
                 Route.objects.create(
                     trail=trail,
-                    name=route['name'],
                     latitude=route['lat'],
                     longitude=route['lng'],
                     order=i
