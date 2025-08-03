@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from .models import Feedback
 from admin_func.serializers import ResponseSerializer
-
+from uuid import uuid4
 
 class FeedbackSerializer(serializers.ModelSerializer):
     responses = ResponseSerializer(many=True, read_only=True)
@@ -36,6 +36,9 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 # feedback/serializers.py
 class CreateFeedbackSerializer(serializers.ModelSerializer):
+    feedback_image = serializers.ImageField(write_only=True, required=False)
+    feedback_image_url = serializers.CharField(read_only=True)
+    
     class Meta:
         model = Feedback
         fields = [
@@ -47,11 +50,14 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
             'longitude',
             'feedback_content',
             'feedback_image',
+            'feedback_image_url',
         ]
+        read_only_fields = ('feedback_image_url',)
 
     def create(self, validated_data):
         # 사용자(user)는 뷰에서 request.user로 설정
         user = self.context['request'].user
+        validated_data.pop('feedback_image',None)
         return Feedback.objects.create(user=user, **validated_data)
 
 class FeedbackResponseSerializer(serializers.ModelSerializer):  # 애초에 이걸 response에서 해야할 거 같은데
