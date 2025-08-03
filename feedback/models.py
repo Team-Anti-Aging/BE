@@ -18,7 +18,7 @@ class Feedback(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     feedback_content = models.TextField()
-    feedback_image = models.TextField(blank=True, null=True)  # URL 또는 base64
+    feedback_image_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress')
