@@ -8,7 +8,7 @@ class Response(models.Model):
     feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE, related_name='responses')
     status = models.CharField(max_length=20, choices=Feedback.STATUS_CHOICES, default='in_progress')
     response_content = models.TextField(blank=True, null=True)
-    response_image = models.TextField(blank=True, null=True)
+    response_image_url = models.URLField(blank=True, null=True)
     responded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

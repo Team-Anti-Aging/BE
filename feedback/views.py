@@ -52,15 +52,15 @@ class FeedbackUploadView(generics.CreateAPIView):
             serializer.save()
 
 class FeedbackListByWalktrail(generics.ListAPIView):
-    serializer_class = FeedbackResponseSerializer
+    serializer_class = FeedbackSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
         return Feedback.objects.filter(walktrail__name=walktrail_name)
 
-class FeedbackListByWalktrailType(generics.ListAPIView):
-    serializer_class = FeedbackResponseSerializer
+class FeedbackListByType(generics.ListAPIView):
+    serializer_class = FeedbackSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
