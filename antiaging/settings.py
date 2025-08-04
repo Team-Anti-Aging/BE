@@ -41,10 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'feedback',
-    'accounts',
-    'walktrails',
-    'admin_func',
     'rest_framework',                  # djangorestframework
     'rest_framework.authtoken',         # djangorestframework (optional, 권장)
     'rest_framework_simplejwt.token_blacklist',  # djangorestframework_simplejwt (optional, 권장)
@@ -58,6 +54,12 @@ INSTALLED_APPS = [
     # simple-jwt 관련
     'rest_framework_simplejwt',
     'storages',
+    'drf_spectacular',                 # swagger
+    # 앱 목록
+    'feedback',
+    'accounts',
+    'walktrails',
+    'admin_func',
 ]
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
@@ -197,6 +199,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',   # swagger
 }
 
 
@@ -217,3 +220,25 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
     'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
 }
+
+SPECTACULAR_SETTINGS = {
+    # General schema metadata. Refer to spec for valid inputs
+    # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#openapi-object
+    'TITLE': 'drf-spectacular API Document',
+    'DESCRIPTION': 'drf-specatular 를 사용해서 만든 API 문서입니다.',
+    'SWAGGER_UI_SETTINGS': {
+        'dom_id': '#swagger-ui',
+        'layout': 'BaseLayout', 
+        'deepLinking': True,  
+        'displayOperationId': True,
+        'filter': True,
+    },
+   
+    'LICENSE': {
+        'name': 'MIT License',
+    },
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+
+    'SWAGGER_UI_DIST': '//unpkg.com/swagger-ui-dist@3.38.0',
+}   # swagger

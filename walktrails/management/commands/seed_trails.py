@@ -34,8 +34,8 @@ class Command(BaseCommand):
             for i, route in enumerate(trail_data['routes']):
                 Route.objects.create(
                     trail=trail,
-                    latitude=route['lat'],
-                    longitude=route['lng'],
+                    lat=route['lat'],
+                    lng=route['lng'],
                     order=i
                 )
 
