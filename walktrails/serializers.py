@@ -7,7 +7,7 @@ from .models import WalkTrail, Route
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Route
-        fields = ['latitude', 'longitude']
+        fields = ['lat', 'lng']
 
 # walktrail 테이블 관련
 class WalkTrailListSerializer(serializers.ModelSerializer):

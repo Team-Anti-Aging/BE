@@ -13,9 +13,9 @@ class WalkTrail(models.Model):
 
 class Route(models.Model):
     trail = models.ForeignKey(WalkTrail, on_delete=models.CASCADE, related_name='routes')
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    lat = models.FloatField()
+    lng = models.FloatField()
     order = models.IntegerField()
 
     def __str__(self):
-        return f"{self.name} - ({self.latitude}, {self.longitude})"
+        return f"{self.name} - ({self.lat}, {self.lng})"
