@@ -10,16 +10,18 @@ from rest_framework.response import Response as DRFResponse
 from admin_func.models import Response as ResponseModel
 
 class IncompleteFeedbackPerTrailView(generics.ListAPIView):
-    serializer_class = IncompleteFeedbackSerializer
+    serializer_class = ResponseListSerializer
     permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
 
     def get(self, request):
         # 각 WalkTrail 별로 미처리된 Feedback 개수 계산
         result = (
             WalkTrail.objects.annotate(
-                incomplete_count=Count('feedback', filter=Q(feedback__status='in_progress'))
+                total_count=Count('feedback'),
+                incomplete_count=Count('feedback', filter=Q(feedback__status='in_progress')),
+                completed_count=Count('feedback', filter=Q(feedback__status='completed')),
             )
-            .values('name', 'incomplete_count')
+            .values('name', 'total_count', 'incomplete_count',  'completed_count')
         )
         return DRFResponse(result)
 
@@ -71,3 +73,18 @@ class ResponseCreateView(generics.CreateAPIView):
         feedback.save()
     
 
+class RespondedFeedbackView(generics.ListAPIView):
+    serializer_class = RespondedFeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        walktrail_name = self.kwargs.get('walktrail_name')
+        return Response.objects.filter(
+            feedback__walktrail__name=walktrail_name,
+            feedback__status='completed'
+        ).order_by('-responded_at')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return DRFResponse(serializer.data)
