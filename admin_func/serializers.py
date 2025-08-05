@@ -47,35 +47,3 @@ class ResponseCreateSerializer(serializers.ModelSerializer):
         return response
 
 
-# 바뀐 동대문구에 전달할
-class RespondedFeedbackSerializer(serializers.ModelSerializer):
-    walk_trail = serializers.SerializerMethodField()
-    location = serializers.SerializerMethodField()
-    feedback_image_url = serializers.SerializerMethodField()
-    response_image_url = serializers.SerializerMethodField()
-    response_content = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Response
-        fields = [
-            'walk_trail',
-            'location',
-            'feedback_image_url',
-            'response_image_url',
-            'response_content',
-        ]
-
-    def get_walk_trail(self, obj):
-        return obj.feedback.walktrail.name if obj.feedback.walktrail else None
-    
-    def get_location(self, obj):
-        return obj.feedback.location if obj.feedback.location else None
-
-    def get_response_image_url(self, obj):
-        return obj.response_image_url or None
-        
-    def get_feedback_image_url(self, obj):
-        return obj.feedback.feedback_image_url or None
-        
-    def get_response_content(self, obj):
-        return obj.response_content or "No response content provided"

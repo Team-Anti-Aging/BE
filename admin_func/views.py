@@ -69,13 +69,5 @@ class ResponseCreateView(generics.CreateAPIView):
         response = serializer.save(admin=self.request.user)
         feedback.status = response.status
         feedback.save()
-
-class RespondedFeedbackView(generics.ListAPIView):
-    serializer_class = RespondedFeedbackSerializer
-    permission_classes = [permissions.IsAuthenticated]  # 모든 인증된 사용자 접근 가능
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        return ResponseModel.objects.filter(feedback__id=pk).order_by('-responded_at')
     
 
