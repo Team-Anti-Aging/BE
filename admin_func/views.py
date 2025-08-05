@@ -1,18 +1,36 @@
 import boto3
 from uuid import uuid4
 from django.conf import settings
-# Create your views here.
 from rest_framework import generics, permissions
 from .models import *
 from .serializers import *
-from feedback.models import Feedback
+from feedback.models import Feedback, WalkTrail
+from django.db.models import Count, Q
+from rest_framework.response import Response as DRFResponse
+from admin_func.models import Response as ResponseModel
+
+class IncompleteFeedbackPerTrailView(generics.ListAPIView):
+    serializer_class = IncompleteFeedbackSerializer
+    permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
+
+    def get(self, request):
+        # 각 WalkTrail 별로 미처리된 Feedback 개수 계산
+        result = (
+            WalkTrail.objects.annotate(
+                incomplete_count=Count('feedback', filter=Q(feedback__status='in_progress'))
+            )
+            .values('name', 'incomplete_count')
+        )
+        return DRFResponse(result)
 
 class ResponseCreateView(generics.CreateAPIView):
-    queryset = Response.objects.all()
+    queryset = ResponseModel.objects.all()
     serializer_class = ResponseCreateSerializer
     permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
 
     def perform_create(self, serializer):
+        pk= self.kwargs.get('pk')
+        feedback = Feedback.objects.get(pk=pk)
 
         image = self.request.FILES.get('response_image')
         image_url = None
@@ -49,11 +67,13 @@ class ResponseCreateView(generics.CreateAPIView):
             serializer.save()
 
         response = serializer.save(admin=self.request.user)
-        feedback = response.feedback
         feedback.status = response.status
         feedback.save()
 
-class ResponseListView(generics.ListAPIView):
-    queryset = Response.objects.all()
-    serializer_class = ResponseListSerializer
-    permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
+class RespondedFeedbackView(generics.ListAPIView):
+    queryset = ResponseModel.objects.all()
+    serializer_class = RespondedFeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated]  # 모든 인증된 사용자 접근 가능
+    lookup_field = 'pk'
+    
+
