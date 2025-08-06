@@ -89,7 +89,8 @@ class RespondedFeedbackSerializer(serializers.ModelSerializer):
         return feedback_image if feedback_image else None
 
     def get_response_content(self, obj):
-        return obj.response_content if obj else None
+        return obj.response_content
 
     def get_response_image_url(self, obj):
-        return obj.response_image_url if obj else None
+        return obj.response_image_url if obj.response_image_url else None
+

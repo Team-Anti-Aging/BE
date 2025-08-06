@@ -9,6 +9,15 @@ from django.db.models import Count, Q
 from rest_framework.response import Response as DRFResponse
 from admin_func.models import Response as ResponseModel
 
+class FeedbackinProgress(generics.ListAPIView):
+    from feedback.serializers import FeedbackSerializer
+    serializer_class = FeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        status = 'in_progress'  # 필터링할 상태
+        return Feedback.objects.filter(status=status).order_by('-created_at')[:5]
+
 class IncompleteFeedbackPerTrailView(generics.ListAPIView):
     serializer_class = ResponseListSerializer
     permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
