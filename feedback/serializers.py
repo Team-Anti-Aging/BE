@@ -56,7 +56,6 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
         read_only_fields = ('feedback_image_url',)
 
     def create(self, validated_data):
-        # 사용자(user)는 뷰에서 request.user로 설정
         user = self.context['request'].user
         validated_data.pop('feedback_image',None)
         return Feedback.objects.create(user=user, **validated_data)

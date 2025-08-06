@@ -7,9 +7,10 @@ from .models import *
 from .serializers import *
 
 class FeedbackUploadView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Feedback.objects.all()
     serializer_class = CreateFeedbackSerializer
-    permission_classes = [IsAuthenticated]
+    
 
     def perform_create(self, serializer):
         image = self.request.FILES.get('feedback_image')
@@ -51,10 +52,18 @@ class FeedbackUploadView(generics.CreateAPIView):
         else:
             serializer.save()
 
+class GetFeedback(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FeedbackSerializer
+    queryset = Feedback.objects.all()
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+
 # UnrespondedFeedback View
 class AllFeedback(generics.ListAPIView):
-    serializer_class = FeedbackSerializer
     permission_classes = [IsAuthenticated]
+    serializer_class = FeedbackSerializer
+    
 
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
