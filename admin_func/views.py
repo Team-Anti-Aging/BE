@@ -4,26 +4,10 @@ from django.conf import settings
 from rest_framework import generics, permissions
 from .models import *
 from .serializers import *
-from feedback.models import Feedback, WalkTrail
-from django.db.models import Count, Q
-from rest_framework.response import Response as DRFResponse
+from rest_framework.response import Response
+from feedback.models import Feedback
 from admin_func.models import Response as ResponseModel
-
-class IncompleteFeedbackPerTrailView(generics.ListAPIView):
-    serializer_class = ResponseListSerializer
-    permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
-
-    def get(self, request):
-        # 각 WalkTrail 별로 미처리된 Feedback 개수 계산
-        result = (
-            WalkTrail.objects.annotate(
-                total_count=Count('feedback'),
-                incomplete_count=Count('feedback', filter=Q(feedback__status='in_progress')),
-                completed_count=Count('feedback', filter=Q(feedback__status='completed')),
-            )
-            .values('name', 'total_count', 'incomplete_count',  'completed_count')
-        )
-        return DRFResponse(result)
+from rest_framework.response import Response as DRFResponse
 
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()

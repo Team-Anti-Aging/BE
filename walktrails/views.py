@@ -1,8 +1,6 @@
-from django.shortcuts import render
-from django.db.models.query import QuerySet
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import generics, permissions
+from django.db.models import Count, Q
+from rest_framework.response import Response as DRFResponse
 
 from . import serializers
 from . import models
@@ -27,4 +25,18 @@ class WalkTrail_info(generics.RetrieveAPIView):
     lookup_field = 'name'
     lookup_url_kwarg = 'name'
 
+class WalkTrail_list_count(generics.GenericAPIView):
+    permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
+
+    def get(self, request):
+        # 각 WalkTrail 별로 미처리된 Feedback 개수 계산
+        result = (
+            models.WalkTrail.objects.annotate(
+                total_count=Count('feedback'),
+                incomplete_count=Count('feedback', filter=Q(feedback__status='in_progress')),
+                completed_count=Count('feedback', filter=Q(feedback__status='completed')),
+            )
+            .values('name', 'total_count', 'incomplete_count',  'completed_count')
+        )
+        return DRFResponse(result)
 
