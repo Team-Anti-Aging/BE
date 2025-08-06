@@ -4,9 +4,8 @@ from django.conf import settings
 from rest_framework import generics, permissions
 from .models import *
 from .serializers import *
-from feedback.models import Feedback, WalkTrail
-from django.db.models import Count, Q
-from rest_framework.response import Response as DRFResponse
+from rest_framework.response import Response
+from feedback.models import Feedback
 from admin_func.models import Response as ResponseModel
 
 class FeedbackinProgress(generics.ListAPIView):
