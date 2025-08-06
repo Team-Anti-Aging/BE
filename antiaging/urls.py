@@ -21,6 +21,7 @@ from drf_spectacular.views import SpectacularJSONAPIView, SpectacularYAMLAPIView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('admin_func/', include('admin_func.urls')),
     path('feedback/', include('feedback.urls')),
     path('walktrails/', include('walktrails.urls')),
     path('dj/', include('dj_rest_auth.urls')),

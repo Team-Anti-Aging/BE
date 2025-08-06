@@ -51,19 +51,15 @@ class FeedbackUploadView(generics.CreateAPIView):
         else:
             serializer.save()
 
-class FeedbackListByWalktrail(generics.ListAPIView):
-    serializer_class = FeedbackResponseSerializer
+# UnrespondedFeedback View
+class AllFeedback(generics.ListAPIView):
+    serializer_class = FeedbackSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
-        return Feedback.objects.filter(walktrail__name=walktrail_name)
+        status = self.kwargs.get('status')
+        type = self.kwargs.get('type')
+        return Feedback.objects.filter(walktrail__name=walktrail_name, status=status, type=type).order_by('-created_at')
 
-class FeedbackListByWalktrailType(generics.ListAPIView):
-    serializer_class = FeedbackResponseSerializer
-    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        walktrail_name = self.kwargs.get('walktrail_name')
-        feedback_type = self.kwargs.get('type')
-        return Feedback.objects.filter(walktrail__name=walktrail_name, type=feedback_type)

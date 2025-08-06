@@ -2,11 +2,11 @@
 
 from rest_framework import serializers
 from .models import Feedback
-from admin_func.serializers import ResponseSerializer
+from admin_func.serializers import ResponseDetailSerializer
 from uuid import uuid4
 
 class FeedbackSerializer(serializers.ModelSerializer):
-    responses = ResponseSerializer(many=True, read_only=True)
+    responses = ResponseDetailSerializer(many=True, read_only=True)
 
     class Meta:
         model = Feedback
@@ -20,9 +20,10 @@ class FeedbackSerializer(serializers.ModelSerializer):
             'latitude',
             'longitude',
             'feedback_content',
-            'feedback_image',
+            'feedback_image_url',
             'created_at',
             'updated_at',
+            'status',
             'responses', # 역참조
         ]
         read_only_fields = [
@@ -59,23 +60,3 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         validated_data.pop('feedback_image',None)
         return Feedback.objects.create(user=user, **validated_data)
-
-class FeedbackResponseSerializer(serializers.ModelSerializer):  # 애초에 이걸 response에서 해야할 거 같은데
-    class Meta:
-        model = Feedback
-        fields = [
-            'status',
-            # 'response_content',   # 역참조 이슈
-            # 'responded_at',
-            # 'response_image',
-        ]
-
-    def update(self, instance, validated_data):
-        admin = self.context['request'].user
-        # instance.admin = admin  # 관리자는 request.user로 설정    # instance에 admin 없음
-        instance.status = validated_data.get('status', instance.status)
-        # instance.response_content = validated_data.get('response_content', instance.response_content)
-        # instance.responded_at = validated_data.get('responded_at')
-        # instance.response_image = validated_data.get('response_image', instance.response_image)
-        instance.save()
-        return instance
