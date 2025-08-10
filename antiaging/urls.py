@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from drf_spectacular.views import SpectacularJSONAPIView, SpectacularYAMLAPIView, SpectacularSwaggerView, SpectacularRedocView
+from drf_spectacular.views import SpectacularJSONAPIView,  SpectacularSwaggerView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,13 +24,10 @@ urlpatterns = [
     path('admin_func/', include('admin_func.urls')),
     path('feedback/', include('feedback.urls')),
     path('walktrails/', include('walktrails.urls')),
-    path('dj/', include('dj_rest_auth.urls')),
-    path('dj/registration/', include('dj_rest_auth.registration.urls')),
+
 
     # Swagger
     path("swagger.json/", SpectacularJSONAPIView.as_view(), name="schema-json"),
-    path("swagger.yaml/", SpectacularYAMLAPIView.as_view(), name="swagger-yaml"),
     path("swagger/", SpectacularSwaggerView.as_view(url_name="schema-json"), name="swagger-ui", ),
-    path("redoc/", SpectacularRedocView.as_view(url_name="schema-json"), name="redoc", ),
 ]
 

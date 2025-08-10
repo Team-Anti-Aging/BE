@@ -3,23 +3,17 @@ from .models import Response
 from walktrails.models import WalkTrail,Route
 from feedback.models import Feedback
 
-class TrailPointSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Route
-        fields = ['lat', 'lng', 'order']
-
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
-        fields = ['id', 'feedback_content','latitude','longitude', 'created_at', 'updated_at']
+        fields = ['id', 'category','latitude','longitude', 'created_at', 'updated_at']
 
-class FeedbacksPerTrailSerializer(serializers.ModelSerializer):
-    routes = TrailPointSerializer(many=True)
+class CurrentFeedbackSerializer(serializers.ModelSerializer):
     feedbacks = serializers.SerializerMethodField()
 
     class Meta:
         model = WalkTrail
-        fields = ['name','routes','feedbacks']
+        fields = ['name', 'feedbacks']
     
     def get_feedbacks(self, obj):
         feedbacks = Feedback.objects.filter(status='in_progress', walktrail=obj).order_by('-created_at')
@@ -118,4 +112,3 @@ class RespondedFeedbackSerializer(serializers.ModelSerializer):
 
     def get_response_image_url(self, obj):
         return obj.response_image_url if obj.response_image_url else None
-

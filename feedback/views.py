@@ -57,7 +57,6 @@ class AllFeedback(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = FeedbackSerializer
     
-
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
         status = self.kwargs.get('status')
