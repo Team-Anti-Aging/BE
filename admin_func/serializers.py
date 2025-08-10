@@ -1,5 +1,30 @@
 from rest_framework import serializers
 from .models import Response
+from walktrails.models import WalkTrail,Route
+from feedback.models import Feedback
+
+class TrailPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Route
+        fields = ['lat', 'lng', 'order']
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = ['id', 'feedback_content', 'created_at', 'updated_at']
+
+class FeedbacksPerTrailSerializer(serializers.ModelSerializer):
+    routes = TrailPointSerializer(many=True)
+    feedbacks = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WalkTrail
+        fields = ['name','routes','feedbacks']
+    
+    def get_feedbacks(self, obj):
+        feedbacks = Feedback.objects.filter(status='in_progress', walktrail=obj).order_by('-created_at')
+        return FeedbackSerializer(feedbacks, many=True).data
+
 
 # Response List Serializer
 class ResponseListSerializer(serializers.ModelSerializer):
