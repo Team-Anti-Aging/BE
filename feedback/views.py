@@ -40,14 +40,7 @@ class FeedbackUploadView(generics.CreateAPIView):
                 ExtraArgs={'ContentType': image.content_type}
             )
 
-            # presigned URL 생성 (예: 1시간 유효)
-            presigned_url = s3.generate_presigned_url(
-                'get_object',
-                Params={'Bucket': bucket_name, 'Key': file_key},
-                ExpiresIn=3600  # 3600초 = 1시간
-            )
-
-            image_url = presigned_url
+            image_url = f"https://{bucket_name}.s3.amazonaws.com/{file_key}"
             serializer.save(feedback_image_url=image_url)
         else:
             serializer.save()
