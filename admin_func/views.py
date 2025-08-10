@@ -5,33 +5,29 @@ from rest_framework import generics, permissions
 from .models import *
 from .serializers import *
 from rest_framework.response import Response
-from feedback.models import Feedback
+from rest_framework.views import APIView
+from feedback.models import Feedback, WalkTrail
 from admin_func.models import Response as ResponseModel
+from django.db.models import Count, Q
 
-class FeedbackinProgress(generics.ListAPIView):
+class FeedbackinProgress(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        qs = WalkTrail.objects.annotate(
+            unresolved_count=Count('feedback', filter=Q(feedback__status='in_progress')),
+        ).values('name', 'unresolved_count').order_by('-unresolved_count')
+
+        return Response(list(qs))
+
+class FeedbackperRoute(generics.ListAPIView):
     from feedback.serializers import FeedbackSerializer
     serializer_class = FeedbackSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        status = 'in_progress'  # 필터링할 상태
-        return Feedback.objects.filter(status=status).order_by('-created_at')[:5]
-
-class IncompleteFeedbackPerTrailView(generics.ListAPIView):
-    serializer_class = ResponseListSerializer
-    permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
-
-    def get(self, request):
-        # 각 WalkTrail 별로 미처리된 Feedback 개수 계산
-        result = (
-            WalkTrail.objects.annotate(
-                total_count=Count('feedback'),
-                incomplete_count=Count('feedback', filter=Q(feedback__status='in_progress')),
-                completed_count=Count('feedback', filter=Q(feedback__status='completed')),
-            )
-            .values('name', 'total_count', 'incomplete_count',  'completed_count')
-        )
-        return DRFResponse(result)
+        status = 'in_progress'
+        return Feedback.objects.filter(status=status, walktrail__name=self.kwargs.get('route')).order_by('-created_at')[:5]
 
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()
@@ -87,7 +83,7 @@ class RespondedFeedbackView(generics.ListAPIView):
 
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
-        return Response.objects.filter(
+        return ResponseModel.objects.filter(  # 모델로 변경
             feedback__walktrail__name=walktrail_name,
             feedback__status='completed'
         ).order_by('-responded_at')
@@ -95,4 +91,4 @@ class RespondedFeedbackView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        return DRFResponse(serializer.data)
+        return Response(serializer.data)  # DRF 응답 객체로 반환
