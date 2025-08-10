@@ -3,11 +3,11 @@ from uuid import uuid4
 from django.conf import settings
 from rest_framework import generics, permissions
 from .models import *
+from .models import Response as ResponseModel
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from feedback.models import Feedback, WalkTrail
-from admin_func.models import Response as ResponseModel
 from django.db.models import Count, Q
 
 class FeedbackinProgress(APIView):
