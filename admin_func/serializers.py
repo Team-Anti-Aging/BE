@@ -11,7 +11,7 @@ class TrailPointSerializer(serializers.ModelSerializer):
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
-        fields = ['id', 'feedback_content', 'created_at', 'updated_at']
+        fields = ['id', 'feedback_content','latitude','longitude', 'created_at', 'updated_at']
 
 class FeedbacksPerTrailSerializer(serializers.ModelSerializer):
     routes = TrailPointSerializer(many=True)
