@@ -3,11 +3,31 @@ from uuid import uuid4
 from django.conf import settings
 from rest_framework import generics, permissions
 from .models import *
+from .models import Response as ResponseModel
 from .serializers import *
 from rest_framework.response import Response
-from feedback.models import Feedback
-from admin_func.models import Response as ResponseModel
-from rest_framework.response import Response as DRFResponse
+from rest_framework.views import APIView
+from feedback.models import Feedback, WalkTrail
+from django.db.models import Count, Q
+
+class FeedbackinProgress(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        qs = WalkTrail.objects.annotate(
+            unresolved_count=Count('feedback', filter=Q(feedback__status='in_progress')),
+        ).values('name', 'unresolved_count').order_by('-unresolved_count')
+
+        return Response(list(qs))
+
+class FeedbackperRoute(generics.ListAPIView):
+    from feedback.serializers import FeedbackSerializer
+    serializer_class = FeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        status = 'in_progress'
+        return Feedback.objects.filter(status=status, walktrail__name=self.kwargs.get('route')).order_by('-created_at')[:5]
 
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()
@@ -63,7 +83,7 @@ class RespondedFeedbackView(generics.ListAPIView):
 
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
-        return Response.objects.filter(
+        return ResponseModel.objects.filter(  # 모델로 변경
             feedback__walktrail__name=walktrail_name,
             feedback__status='completed'
         ).order_by('-responded_at')
@@ -71,4 +91,4 @@ class RespondedFeedbackView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        return DRFResponse(serializer.data)
+        return Response(serializer.data)  # DRF 응답 객체로 반환

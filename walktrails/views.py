@@ -35,8 +35,7 @@ class WalkTrail_list_count(generics.GenericAPIView):
                 total_count=Count('feedback'),
                 incomplete_count=Count('feedback', filter=Q(feedback__status='in_progress')),
                 completed_count=Count('feedback', filter=Q(feedback__status='completed')),
-            )
+            )   
             .values('name', 'total_count', 'incomplete_count',  'completed_count')
         )
         return DRFResponse(result)
-
