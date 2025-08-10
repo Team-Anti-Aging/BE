@@ -58,14 +58,8 @@ class ResponseCreateView(generics.CreateAPIView):
                 file_key,
                 ExtraArgs={'ContentType': image.content_type}
             )
-            # presigned URL 생성
-            presigned_url = s3.generate_presigned_url(
-                'get_object',
-                Params={'Bucket': bucket_name, 'Key': file_key},
-                ExpiresIn=3600  # 1시간 유효
-            )   
 
-            image_url = presigned_url
+            image_url = f"https://{bucket_name}.s3.amazonaws.com/{file_key}"
             serializer.save(response_image_url=image_url)
         else:   
             serializer.save()
