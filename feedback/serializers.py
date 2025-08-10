@@ -59,3 +59,27 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         validated_data.pop('feedback_image',None)
         return Feedback.objects.create(user=user, **validated_data)
+    
+class OnlyFeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = [
+            'id',
+            'user',
+            'walktrail',
+            'location',
+            'type',
+            'category',
+            'latitude',
+            'longitude',
+            'feedback_content',
+            'feedback_image_url',
+            'created_at',
+            'updated_at',
+            'status',
+        ]
+        read_only_fields = [
+            'id',
+            'created_at',
+            'updated_at',
+        ]

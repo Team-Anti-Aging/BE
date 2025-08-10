@@ -15,17 +15,15 @@ class FeedbackinProgress(APIView):
 
     def get(self, request):
         qs = WalkTrail.objects.annotate(
-            unresolved_count=Count('feedback', filter=Q(feedback__status='in_progress')),
-        ).values('name', 'unresolved_count').order_by('-unresolved_count')
+            unresolved_count=Count('feedback', filter=Q(feedback__status='in_progress')),            
+        ).values('name', 'unresolved_count')
         return Response(list(qs))
-
-class FeedbackperRoute(generics.ListAPIView):
-    serializer_class = FeedbacksPerTrailSerializer
-    def get_queryset (self):
-        route_name = self.kwargs.get('route')
-        if route_name:
-            return WalkTrail.objects.filter(name=route_name)
-        return WalkTrail.objects.all()
+    
+class CurrentFeedback(generics.RetrieveAPIView):
+    queryset = WalkTrail.objects.all()
+    serializer_class = CurrentFeedbackSerializer
+    lookup_field = 'name'
+    lookup_url_kwarg = 'walktrail_name'
 
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()
