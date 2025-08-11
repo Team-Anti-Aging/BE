@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from feedback.models import Feedback, WalkTrail
 from django.db.models import Count, Q
 
+# 각 산책로별 피드백 현황
 class FeedbackinProgress(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -19,11 +20,24 @@ class FeedbackinProgress(APIView):
         ).values('name', 'unresolved_count')
         return Response(list(qs))
     
-class CurrentFeedback(generics.RetrieveAPIView):
-    queryset = WalkTrail.objects.all()
+# 각 산책로별 피드백 리스트 (상위 5개)
+class CurrentFeedback(generics.ListAPIView):
+    from rest_framework import generics, permissions
+
+class CurrentFeedbackList(generics.ListAPIView):
     serializer_class = CurrentFeedbackSerializer
-    lookup_field = 'name'
-    lookup_url_kwarg = 'walktrail_name'
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        walktrail_name = self.kwargs.get('walktrail_name')
+        qs = WalkTrail.objects.filter(feedback__status='in_progress')
+
+        if walktrail_name:
+            qs = qs.filter(name=walktrail_name)
+
+        # 피드백의 생성시간 기준 내림차순 정렬, 상위 5개
+        return qs.order_by('-feedback__created_at')[:5]
+
 
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()
