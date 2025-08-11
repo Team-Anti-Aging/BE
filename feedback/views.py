@@ -62,5 +62,3 @@ class AllFeedback(generics.ListAPIView):
         status = self.kwargs.get('status')
         type = self.kwargs.get('type')
         return Feedback.objects.filter(walktrail__name=walktrail_name, status=status, type=type).order_by('-created_at')
-
-
