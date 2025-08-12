@@ -37,9 +37,8 @@ class Walktrail_feedback(generics.ListAPIView):
     
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
-        status = "in_progress"
-        type = self.kwargs.get('type')
-        return Feedback.objects.filter(walktrail__name=walktrail_name, status=status, type=type)
+        print(Feedback.objects.values_list('status', flat=True).distinct())
+        return Feedback.objects.filter(walktrail__name=walktrail_name, status='in_progress').order_by('-created_at')
 
 class WalkTrail_list_count(generics.GenericAPIView):
     def get(self, request):
