@@ -21,20 +21,13 @@ class FeedbackinProgress(APIView):
         return Response(list(qs))
     
 # 각 산책로별 피드백 리스트 (상위 5개)
-class CurrentFeedback(generics.ListAPIView):
-    from rest_framework import generics, permissions
-
 class CurrentFeedbackList(generics.ListAPIView):
     serializer_class = CurrentFeedbackSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
-        qs = WalkTrail.objects.filter(feedback__status='in_progress')
-
-        if walktrail_name:
-            qs = qs.filter(name=walktrail_name)
-
+        qs = WalkTrail.objects.filter(feedback__status='in_progress', name=walktrail_name)
         # 피드백의 생성시간 기준 내림차순 정렬, 상위 5개
         return qs.order_by('-feedback__created_at')[:5]
 
