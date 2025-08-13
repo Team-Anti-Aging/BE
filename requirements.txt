@@ -1,44 +1,7 @@
-# Django & REST
-Django==5.2.4
-djangorestframework==3.16.0
-dj-rest-auth==7.0.1
-django-allauth==65.10.0
-django-cors-headers==4.7.0
-djangorestframework_simplejwt==5.5.0
-
-# API 문서화
-drf-spectacular==0.28.0
-drf-yasg==1.21.10
-
-# Storage & AWS
-django-storages==1.14.6
-boto3==1.40.1
-botocore==1.40.1
-s3transfer==0.13.1
-
-# DB
-mysqlclient==2.2.7
-# 또는 PyMySQL==1.1.1 (mysqlclient 대신 사용 가능)
-
-# 보안 & 인증
-cryptography==45.0.5
-PyJWT==2.9.0
-python-decouple==3.8
-python3-openid==3.2.0
-requests-oauthlib==2.0.0
-oauthlib==3.2.2
-
-# 필수 유틸
-Pillow==11.2.1
-asgiref==3.9.1
-sqlparse==0.5.3
-pytz==2025.2
-tzdata==2025.2
-requests==2.32.4
-urllib3==2.4.0
-idna==3.10
-charset-normalizer==3.4.2
-certifi==2025.7.9
-
-# 배포용 WSGI
+cffi==1.17.1
+cryptography==45.0.6
 gunicorn==23.0.0
+mysqlclient==2.2.7
+packaging==25.0
+pycparser==2.22
+python-decouple==3.8
