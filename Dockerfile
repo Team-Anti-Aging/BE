@@ -13,4 +13,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 COPY .env .
 
-RUN python manage.py collectstatic --noinput  ''' 정적파일 관련'''
+RUN python manage.py collectstatic --noinput  # 정적파일 관련
