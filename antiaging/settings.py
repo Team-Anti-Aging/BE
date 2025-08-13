@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'antiaging-hufs.shop']
 
 
 # Application definition
@@ -108,10 +108,17 @@ WSGI_APPLICATION = 'antiaging.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+import pymysql
+
+pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': config('DB_NAME'), # DB(스키마) 이름
+        'USER': config('DB_USER'), # 유저 이름 (root)
+        'PASSWORD': config('DB_PASSWORD'), # DB 비밀번호
+        'HOST': config('DB_HOST'), # DB 엔드포인트
+        'PORT': 3306,
     }
 }
 
@@ -242,3 +249,8 @@ SPECTACULAR_SETTINGS = {
 
     'SWAGGER_UI_DIST': '//unpkg.com/swagger-ui-dist@3.38.0',
 }   # swagger
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
