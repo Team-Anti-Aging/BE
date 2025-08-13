@@ -3,7 +3,7 @@ services:
     web:
         image: server
         container_name: web
-        command: bash -c "gunicorn BE.wsgi:application -b 0.0.0.0:8000" # 서버 실행
+        command: bash -c "gunicorn antiaging.wsgi:application -b 0.0.0.0:8000" # 서버 실행
         ports:
             - '8000:8000'
         restart: always
@@ -25,8 +25,6 @@ services:
             - ./media:/media # media가 있으면
             - ./cert/certbot/conf:/etc/letsencrypt # 이 부분
             - ./cert/certbot/www:/var/www/certbot # 이 부분
-            # - ./cert/certbot/conf/options-ssl-nginx.conf:/etc/letsencrypt/options-ssl-nginx.conf # gpt로 이거 추가
-            # - ./cert/certbot/conf/ssl-dhparams.pem:/etc/letsencrypt/ssl-dhparams.pem # 얘도 추가
 
         restart: always # 이 부분
         ports:
