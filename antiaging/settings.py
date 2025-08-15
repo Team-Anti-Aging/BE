@@ -160,6 +160,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = '/app/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -196,12 +197,14 @@ REST_AUTH = {
     'JWT_AUTH_REFRESH_COOKIE': None,
     'JWT_AUTH_REFRESH_COOKIE_PATH': '/',
     'JWT_AUTH_SECURE': False,
-    'JWT_AUTH_HTTPONLY': False, #이부분
+    'JWT_AUTH_HTTPONLY': True, #이부분
     'JWT_AUTH_SAMESITE': 'Lax',
     'JWT_AUTH_RETURN_EXPIRATION': False,
     'JWT_AUTH_COOKIE_USE_CSRF': False,
     'JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED': False,
 }
+
+CSRF_TRUSTED_ORIGINS = [ "https://antiaging-hufs.store", "https://dev.antiaging-hufs.store", ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
