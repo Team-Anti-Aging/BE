@@ -75,6 +75,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -249,6 +250,15 @@ SPECTACULAR_SETTINGS = {
 
     'SWAGGER_UI_DIST': '//unpkg.com/swagger-ui-dist@3.38.0',
 }   # swagger
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "https://antiaging-hufs.store",
+    "https://dev.antiaging-hufs.store",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 try:
     from .local_settings import *
