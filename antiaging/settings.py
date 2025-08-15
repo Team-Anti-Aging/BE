@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'dev.antiaging-hufs.store']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'antiaging-hufs.store', 'dev.antiaging-hufs.store', 'admin.antiaging-hufs.store']
 
 
 # Application definition
@@ -204,7 +204,7 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED': False,
 }
 
-CSRF_TRUSTED_ORIGINS = [ "https://antiaging-hufs.store", "https://dev.antiaging-hufs.store", ]
+CSRF_TRUSTED_ORIGINS = [ "https://antiaging-hufs.store", "https://dev.antiaging-hufs.store", "https://admin.antiaging-hufs.store",]
 CSRF_COOKIE_SECURE = True
 
 
@@ -261,6 +261,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "https://antiaging-hufs.store",
     "https://dev.antiaging-hufs.store",
+    "https://admin.antiaging-hufs.store",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
