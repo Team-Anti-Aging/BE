@@ -180,3 +180,5 @@ myvenv/
 
 cert/*
 init-letsencrypt.sh
+
+nginx 설정
