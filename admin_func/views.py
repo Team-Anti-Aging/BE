@@ -8,7 +8,7 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from feedback.models import Feedback, WalkTrail
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
 from django.utils.timezone import now
 from feedback.serializers import OnlyFeedbackSerializer
 
@@ -33,6 +33,47 @@ class CurrentFeedbackList(generics.ListAPIView):
         # 피드백의 생성시간 기준 내림차순 정렬, 상위 5개
         return qs.order_by('-feedback__created_at')
 
+# 산책로 현황 기본 화면
+class EntireFeedbackView(generics.ListAPIView):
+    serializer_class = FeedbackSummarySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return WalkTrail.objects.values('name').annotate(
+            suggestion_count=Count('feedback', filter=Q(feedback__type='제안')),
+            inconvenience_count=Count('feedback', filter=Q(feedback__type='불편'))
+        ).order_by('id')
+
+#산책로별 상세 현황
+class FeedbackByTrailView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = FeedbackCategoryCountSerializer
+
+    def get(self, request, walktrail_name):
+        qs = Feedback.objects.filter(walktrail__name=walktrail_name).values(
+            'walktrail__name', 'type'
+        ).annotate(
+            count_category1=Count(
+                'id',
+                filter=Q(type='불편', category='안전') | Q(type='제안', category='편의시설 확충')
+            ),
+            count_category2=Count(
+                'id',
+                filter=Q(type='불편', category='청결') | Q(type='제안', category='경관 개선')
+            ),
+            count_category3=Count(
+                'id',
+                filter=Q(type='불편', category='이동성') | Q(type='제안', category='정보 제공')
+            ),
+            count_category4=Count(
+                'id',
+                filter=Q(type='불편', category='소음방해') | Q(type='제안', category='프로그램/이벤트')
+            )
+
+
+        ).order_by('walktrail__name','type')
+
+        return Response(FeedbackCategoryCountSerializer(qs, many=True).data)
 
 # 금일 신고 내역 (산책로 별 / (불편, 제안) 별)
 # ==============================================================================================
@@ -63,8 +104,8 @@ class RecentFeedbackView(generics.ListAPIView):
             qs = qs.order_by('-created_at')  # 리스트일 경우 최신순
 
         return qs
+    
 # ============================================================================================================
-
 # 피드백에 대한 응답 생성 뷰
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()
