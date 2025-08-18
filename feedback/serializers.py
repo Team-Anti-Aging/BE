@@ -6,7 +6,7 @@ from admin_func.serializers import ResponseDetailSerializer
 from uuid import uuid4
 
 class FeedbackSerializer(serializers.ModelSerializer):
-    responses = ResponseDetailSerializer(many=True, read_only=True)
+    #responses = ResponseDetailSerializer(many=True, read_only=True)
 
     class Meta:
         model = Feedback
@@ -24,7 +24,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             'status',
-            'responses', # 역참조
+            # 'responses', # 역참조
         ]
         read_only_fields = [
             'id',
@@ -48,7 +48,7 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
             'type',
             'category',
             'latitude',
-            'longitude',
+            'longitude',    
             'feedback_content',
             'feedback_image',
             'feedback_image_url',

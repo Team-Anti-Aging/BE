@@ -10,7 +10,6 @@ class FeedbackUploadView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Feedback.objects.all()
     serializer_class = CreateFeedbackSerializer
-    
 
     def perform_create(self, serializer):
         image = self.request.FILES.get('feedback_image')
