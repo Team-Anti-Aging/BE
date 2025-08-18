@@ -19,6 +19,25 @@ class CurrentFeedbackSerializer(serializers.ModelSerializer):
         feedbacks = Feedback.objects.filter(status='in_progress', walktrail=obj).order_by('-created_at')
         return FeedbackSerializer(feedbacks, many=True).data
 
+class FeedbackSummarySerializer(serializers.ModelSerializer):
+    suggestion_count = serializers.IntegerField()
+    inconvenience_count = serializers.IntegerField()
+
+    class Meta:
+        model = WalkTrail
+        fields = ['name', 'suggestion_count', 'inconvenience_count']
+
+class FeedbackCategoryCountSerializer(serializers.Serializer):
+    walktrail_name = serializers.CharField(source='walktrail__name')
+    type = serializers.CharField()
+    count_category1 = serializers.IntegerField()
+    count_category2 = serializers.IntegerField()
+    count_category3 = serializers.IntegerField()
+    count_category4 = serializers.IntegerField()
+
+    class Meta:
+        model = Feedback
+        fields = ['walktrail__name','type', 'count_category1', 'count_category2','count_category3','count_category4']
 
 # Response List Serializer
 class ResponseListSerializer(serializers.ModelSerializer):

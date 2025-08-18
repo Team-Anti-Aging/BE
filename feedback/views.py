@@ -10,7 +10,6 @@ class FeedbackUploadView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Feedback.objects.all()
     serializer_class = CreateFeedbackSerializer
-    
 
     def perform_create(self, serializer):
         image = self.request.FILES.get('feedback_image')
@@ -62,5 +61,3 @@ class AllFeedback(generics.ListAPIView):
         status = self.kwargs.get('status')
         type = self.kwargs.get('type')
         return Feedback.objects.filter(walktrail__name=walktrail_name, status=status, type=type).order_by('-created_at')
-
-

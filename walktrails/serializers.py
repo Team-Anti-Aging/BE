@@ -25,11 +25,3 @@ class WalkTrailInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = WalkTrail
         fields = ['name', 'duration', 'distance_km', 'description', 'checkpoint']
-
-class WalkTrailRouteSerializer(serializers.ModelSerializer):
-    # 산책로 루트 출력
-    routes = RouteSerializer(many = True)
-    
-    class Meta:
-        model = WalkTrail
-        fields = ['name', 'routes']
