@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import Feedback
 from admin_func.serializers import ResponseDetailSerializer
 from uuid import uuid4
+from walktrails.models import WalkTrail
 
 class FeedbackSerializer(serializers.ModelSerializer):
     #responses = ResponseDetailSerializer(many=True, read_only=True)
@@ -39,6 +40,10 @@ class FeedbackSerializer(serializers.ModelSerializer):
 class CreateFeedbackSerializer(serializers.ModelSerializer):
     feedback_image = serializers.ImageField(write_only=True, required=False)
     feedback_image_url = serializers.CharField(read_only=True)
+    walktrail = serializers.SlugRelatedField(
+        queryset=WalkTrail.objects.all(),
+        slug_field="name"
+    )
     
     class Meta:
         model = Feedback
