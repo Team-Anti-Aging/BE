@@ -6,7 +6,7 @@ from feedback.models import Feedback
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
-        fields = ['id', 'category','latitude','longitude', 'created_at', 'updated_at']
+        fields = ['id', 'category', 'type', 'latitude','longitude', 'created_at', 'updated_at']
 
 class CurrentFeedbackSerializer(serializers.ModelSerializer):
     feedbacks = serializers.SerializerMethodField()
