@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'admin_func',
 ]
 
+OPENAI_API_KEY = config("OPENAI_API_KEY")
+
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = 'ap-northeast-2'
@@ -214,7 +216,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',   # swagger
 }
-
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_EMAIL_REQUIRED = False

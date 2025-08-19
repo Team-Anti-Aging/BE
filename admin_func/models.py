@@ -1,6 +1,8 @@
 from django.db import models
 from accounts.models import User
 from feedback.models import Feedback
+from walktrails.models import WalkTrail
+
 
 # Create your models here.
 class Response(models.Model):
@@ -13,3 +15,9 @@ class Response(models.Model):
 
     def __str__(self):
         return f"Response to Feedback #{self.feedback} by {self.admin.nickname}" if self.admin else "Response without Admin"
+
+class AIReport(models.Model):
+    walktrail = models.ForeignKey(WalkTrail, on_delete=models.CASCADE, related_name="ai_reports")
+    report_text = models.TextField()  # GPT가 생성한 전체 리포트
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
