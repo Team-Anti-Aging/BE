@@ -1,4 +1,5 @@
 import boto3
+import openai
 from uuid import uuid4
 from django.conf import settings
 from rest_framework import generics, permissions
@@ -78,15 +79,21 @@ class FeedbackByTrailView(generics.GenericAPIView):
 # 금일 신고 내역 (산책로 별 / (불편, 제안) 별)
 # ==============================================================================================
 class TodayFeedbackView(generics.ListAPIView):
-    serializer_class=CurrentFeedbackSerializer
+    serializer_class = CurrentFeedbackSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
+    def get_queryset(self):
         today = now().date()
-        qs = Feedback.objects.filter(created_at__date=today).values(
-            'walktrail__name', 'type'
-        ).annotate(count=Count('id')).order_by('walktrail__name', 'type')
-        return Response(list(qs))
+        return WalkTrail.objects.annotate(
+            suggestion_count=Count(
+                'feedback',
+                filter=Q(feedback__type='제안', feedback__created_at__date=today)
+            ),
+            inconvenience_count=Count(
+                'feedback',
+                filter=Q(feedback__type='불편', feedback__created_at__date=today)
+            )
+        ).order_by('name')
 
 # 특정 산책로의 최근 피드백
 class RecentFeedbackView(generics.ListAPIView):
@@ -154,9 +161,9 @@ class RespondedFeedbackView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        walktrail_name = self.kwargs.get('walktrail_name')
+        walktrail_id = self.kwargs.get('walktrail_id')
         return ResponseModel.objects.filter(  # 모델로 변경
-            feedback__walktrail__name=walktrail_name,
+            feedback__walktrail__id=walktrail_id,
             feedback__status='completed'
         ).order_by('-responded_at')
 
@@ -165,3 +172,56 @@ class RespondedFeedbackView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)  # DRF 응답 객체로 반환
 
+class AIReportOpenAIView(APIView):
+    """
+    산책로 이름 기준 AI 리포트 (OpenAI 최신 API)
+    """
+    def get(self, request, walktrail_name):
+        # 산책로 객체 가져오기
+        try:
+            walktrail = WalkTrail.objects.get(name=walktrail_name)
+        except WalkTrail.DoesNotExist:
+            return Response({"error": "해당 산책로가 존재하지 않습니다."}, status=404)
+
+        # Feedback 조회
+        feedbacks = Feedback.objects.filter(walktrail=walktrail)
+        if not feedbacks.exists():
+            return Response({"message": "해당 산책로 피드백이 없습니다."})
+
+        # 프롬프트 생성
+        feedback_texts = "\n".join(
+            f"- [{f.type}] {f.category} / {f.location}: {f.feedback_content}"
+            for f in feedbacks
+        )
+        prompt = f"""
+        당신은 동대문구 산책로 개선사업 담당 관리자입니다.
+        아래 피드백 데이터를 분석해서 종합 리포트를 작성해주세요.
+        피드백 데이터:
+        {feedback_texts}
+        """
+
+        # OpenAI 최신 API 호출
+        openai.api_key = settings.OPENAI_API_KEY
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "당신은 데이터 분석 전문가입니다."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1000,
+        )
+
+        report_text = response.choices[0].message.content
+
+        # DB 저장
+        ai_report, _ = AIReport.objects.update_or_create(
+            walktrail=walktrail,
+            defaults={"report_text": report_text}
+        )
+
+        # 프론트 반환
+        return Response({
+            "walktrail_name": walktrail.name,
+            "ai_report": report_text
+        })

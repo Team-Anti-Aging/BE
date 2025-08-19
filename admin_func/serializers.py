@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Response
+from .models import Response, AIReport
 from walktrails.models import WalkTrail,Route
 from feedback.models import Feedback
 
@@ -9,15 +9,12 @@ class FeedbackSerializer(serializers.ModelSerializer):
         fields = ['id', 'category', 'type', 'latitude','longitude', 'created_at', 'updated_at']
 
 class CurrentFeedbackSerializer(serializers.ModelSerializer):
-    feedbacks = serializers.SerializerMethodField()
+    suggestion_count = serializers.IntegerField(read_only=True)
+    inconvenience_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = WalkTrail
-        fields = ['name', 'feedbacks']
-    
-    def get_feedbacks(self, obj):
-        feedbacks = Feedback.objects.filter(status='in_progress', walktrail=obj).order_by('-created_at')
-        return FeedbackSerializer(feedbacks, many=True).data
+        fields = ['name', 'suggestion_count', 'inconvenience_count']
 
 class FeedbackSummarySerializer(serializers.ModelSerializer):
     suggestion_count = serializers.IntegerField()
@@ -131,3 +128,8 @@ class RespondedFeedbackSerializer(serializers.ModelSerializer):
 
     def get_response_image_url(self, obj):
         return obj.response_image_url if obj.response_image_url else None
+
+class AIReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AIReport
+        fields = ['walktrail_name', 'report_text', 'created_at']

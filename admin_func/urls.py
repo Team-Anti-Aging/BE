@@ -7,15 +7,19 @@ urlpatterns = [
     path('notice/', FeedbackinProgress.as_view(), name='feedback_notice'),
     path('route/<str:walktrail_name>/', Walktrail_route.as_view(), name='walktrail_route'),
 
-    path('routefeedback/', EntireFeedbackView.as_view(), name='route_feedback'), # 전체 산책로 피드백 현황
-    path('routefeedback/<str:walktrail_name>/', FeedbackByTrailView.as_view(), name='route_feedback'), #각 산책로별 피드백 카테고리 별 분포
+    path('routefeedback/', EntireFeedbackView.as_view(), name='route_feedback_entire'), # 전체 산책로 피드백 현황
+    path('routefeedback/<str:walktrail_name>/', FeedbackByTrailView.as_view(), name='route_feedback_specific'), #각 산책로별 피드백 카테고리 별 분포
 
     path('recent/', TodayFeedbackView.as_view(), name='today_feedback'), # 금일 피드백 현황 뷰
-    path('recent/<str:walktrail_name>/', RecentFeedbackView.as_view(), name='walktrail_feedback'), # 특정 산책로의 최근 피드백 (전체)
-    path('recent/<str:walktrail_name>/<int:pk>/', RecentFeedbackView.as_view(), name='recent_feedback'), # 특정 산책로의 최근 피드백 (특정 1개)
-    
+    path('recent/<str:walktrail_name>/', RecentFeedbackView.as_view(), name='recent_feedback'), # 특정 산책로의 최근 피드백 (전체)
+    path('recent/<str:walktrail_name>/<int:pk>/', RecentFeedbackView.as_view(), name='recent_feedback_specific'), # 특정 산책로의 최근 피드백 (특정 1개)
+
+    path('aireport/<str:walktrail_name>/', AIReportOpenAIView.as_view(), name='ai_report'),
+
     path('feedback/<str:walktrail_name>/', Walktrail_feedback.as_view(), name='walktrail_feedback'),
     path('current/<str:walktrail_name>/', CurrentFeedbackList.as_view(), name='current_feedback'),
     path('create/<int:pk>/', ResponseCreateView.as_view(), name='response-create'),
     path('responded/<str:walktrail_name>/', RespondedFeedbackView.as_view(), name='responded-feedback-list'),
+
+
 ]
