@@ -115,6 +115,7 @@ class RecentFeedbackView(generics.ListAPIView):
     
 # ============================================================================================================
 # 피드백에 대한 응답 생성 뷰
+# 응답생성 시 자동 status 값 조정 로직 개선
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()
     serializer_class = ResponseCreateSerializer
