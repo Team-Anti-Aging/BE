@@ -221,7 +221,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_EMAIL_REQUIRED = False
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1), # 액세스 토큰의 유효기간
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=4), # 액세스 토큰의 유효기간
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # 리프레시 토큰의 유효기간
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -263,6 +263,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://antiaging-hufs.store",
     "https://dev.antiaging-hufs.store",
     "https://admin.antiaging-hufs.store",
+    "https://antiaging-hufsstore.netlify.app",
+    "http://antiaginghufs.store"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
