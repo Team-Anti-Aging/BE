@@ -121,13 +121,16 @@ class ResponseCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
 
     def perform_create(self, serializer):
-        pk= self.kwargs.get('pk')
+        pk = self.kwargs.get('pk')
         feedback = Feedback.objects.get(pk=pk)
 
-        image = self.request.FILES.get('response_image')
+        # 이미지 URL을 초기화
         image_url = None
 
+        image = self.request.FILES.get('response_image')
+
         if image:
+            # S3 업로드 로직
             s3 = boto3.client(
                 's3',
                 aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
@@ -135,25 +138,26 @@ class ResponseCreateView(generics.CreateAPIView):
                 region_name=settings.AWS_S3_REGION_NAME,
             )
             bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-            region = settings.AWS_S3_REGION_NAME
-
             ext = image.name.split('.')[-1]
             file_key = f"response_images/{uuid4()}.{ext}"
 
             s3.upload_fileobj(
-                image, 
-                bucket_name, 
+                image,
+                bucket_name,
                 file_key,
                 ExtraArgs={'ContentType': image.content_type}
             )
 
             image_url = f"https://{bucket_name}.s3.amazonaws.com/{file_key}"
-            serializer.save(response_image_url=image_url)
-        else:   
-            serializer.save()
+        
+        # serializer.save()를 한 번만 호출하여 모든 데이터를 저장
+        serializer.save(
+            response_image_url=image_url,
+            admin=self.request.user
+        )
 
-        response = serializer.save(admin=self.request.user)
-        feedback.status = response.status
+        # Feedback 상태를 업데이트
+        feedback.status = 'completed'
         feedback.save()
     
 
