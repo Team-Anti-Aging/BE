@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin_func/', include('admin_func.urls')),
     path('feedback/', include('feedback.urls')),
     path('walktrails/', include('walktrails.urls')),
+    path('mypage/', include('mypage.urls')),
 
 
     # Swagger
