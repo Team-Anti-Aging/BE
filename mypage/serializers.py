@@ -7,9 +7,3 @@ class FavoriteSerializer(serializers.ModelSerializer):
         model = Favorite_walktrail
         fields = ["id", "user", "walktrail", "created_at"]
         read_only_fields = ["id", "user", "walktrail", "created_at"]
-
-# class MypageSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         fields = ['favorite']
-
-    
