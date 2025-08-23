@@ -2,12 +2,23 @@
 
 from rest_framework import serializers
 from .models import WalkTrail, Route
+from mypage.models import Favorite_walktrail
 
 class WalkTrailListSerializer(serializers.ModelSerializer):
+    is_favorited = serializers.SerializerMethodField()
     # 산책로 리스트
     class Meta:
         model = WalkTrail
-        fields = ['name', 'duration', 'distance_km']
+        fields = ['name', 'duration', 'distance_km', 'is_favorited']
+
+    def get_is_favorited(self,obj):
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+
+        if not user or not user.is_authenticated:
+            return False
+        
+        return Favorite_walktrail.objects.filter(user=user, policy=obj).exists()
 
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
