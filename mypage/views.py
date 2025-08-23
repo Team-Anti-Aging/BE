@@ -9,7 +9,7 @@ from django.db.models import Count, Q
 from .models import Favorite_walktrail
 from .serializers import FavoriteSerializer
 from walktrails.models import WalkTrail
-from walktrails.serializers import WalkTrailInfoSerializer
+from walktrails.serializers import WalkTrailListSerializer
 from feedback.models import Feedback
 from feedback.serializers import FeedbackSerializer
 
@@ -48,7 +48,7 @@ class Favorite_walktrail_view(generics.GenericAPIView):
 
 class Favorite_walktrail_list_view(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = WalkTrailInfoSerializer
+    serializer_class = WalkTrailListSerializer
     pagination_class = None
     
     def get_queryset(self):

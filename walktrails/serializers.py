@@ -18,7 +18,7 @@ class WalkTrailListSerializer(serializers.ModelSerializer):
         if not user or not user.is_authenticated:
             return False
         
-        return Favorite_walktrail.objects.filter(user=user, policy=obj).exists()
+        return Favorite_walktrail.objects.filter(user=user, walktrail=obj).exists()
 
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
