@@ -25,14 +25,15 @@ class FeedbackinProgress(APIView):
     
 # 각 산책로별 피드백 리스트 (상위 5개)
 class CurrentFeedbackList(generics.ListAPIView):
-    serializer_class = CurrentFeedbackSerializer
+    serializer_class = FeedbackSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         walktrail_name = self.kwargs.get('walktrail_name')
-        qs = WalkTrail.objects.filter(feedback__status='in_progress', name=walktrail_name)
-        # 피드백의 생성시간 기준 내림차순 정렬, 상위 5개
-        return qs.order_by('-feedback__created_at')
+        qs = Feedback.objects.filter(
+            walktrail__name=walktrail_name,
+        ).order_by('-created_at')[:5]
+        return qs
 
 # 산책로 현황 기본 화면
 class EntireFeedbackView(generics.ListAPIView):
@@ -153,8 +154,9 @@ class ResponseCreateView(generics.CreateAPIView):
         
         # serializer.save()를 한 번만 호출하여 모든 데이터를 저장
         serializer.save(
-            response_image_url=image_url,
-            admin=self.request.user
+            admin=self.request.user,
+            feedback=feedback,
+            response_image_url=image_url
         )
 
         # Feedback 상태를 업데이트
@@ -167,9 +169,9 @@ class RespondedFeedbackView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        walktrail_id = self.kwargs.get('walktrail_id')
-        return ResponseModel.objects.filter(  # 모델로 변경
-            feedback__walktrail__id=walktrail_id,
+        walktrail_name = self.kwargs.get('walktrail_name')
+        return ResponseModel.objects.filter(
+            feedback__walktrail__name=walktrail_name,
             feedback__status='completed'
         ).order_by('-responded_at')
 

@@ -73,26 +73,11 @@ class ResponseDetailSerializer(serializers.ModelSerializer):
         ]
 
 class ResponseCreateSerializer(serializers.ModelSerializer):
-    response_image = serializers.ImageField(write_only=True, required=False)
-    response_image_url = serializers.CharField(read_only=True)
+    response_image = serializers.ImageField(write_only=True, required=False) # 입력 전용
     
     class Meta:
         model = Response
-        fields = [
-            'feedback',
-            'status',
-            'response_content',
-            'response_image',
-            'response_image_url',
-        ]
-        read_only_fields = ('response_image_url',)
-    
-    def create(self, validated_data):
-        # 사용자(admin)는 뷰에서 request.user로 설정
-        admin = self.context['request'].user
-        validated_data.pop('response_image', None)
-        response = Response.objects.create(admin=admin, **validated_data)
-        return response
+        fields = ['response_content', 'response_image']
 
 
 class RespondedFeedbackSerializer(serializers.ModelSerializer):
