@@ -16,7 +16,7 @@ from feedback.serializers import OnlyFeedbackSerializer
 # 각 산책로별 피드백 현황
 class FeedbackinProgress(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    
     def get(self, request):
         qs = WalkTrail.objects.annotate(
             unresolved_count=Count('feedback', filter=Q(feedback__status='in_progress')),            
