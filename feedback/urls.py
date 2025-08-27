@@ -1,8 +1,10 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 from .views import *
 
+router = DefaultRouter()
+router.register(r'upload', FeedbackUploadViewSet, basename='feedback-upload')
+
 urlpatterns = [
-    path('upload/', FeedbackUploadView.as_view(), name='feedback-upload'),
-    path('list/<str:walktrail_name>/<str:type>/<str:status>/', AllFeedback.as_view(), name='feedback-list-walktrail'), #status 종류별로 분기
     path('<int:id>/', GetFeedback.as_view(), name='feedback-get'),
-]
+] + router.urls
