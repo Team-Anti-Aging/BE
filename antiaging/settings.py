@@ -263,6 +263,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:8000",
     "https://antiaging-hufs.store",
+    "https://www.antiaging-hufs.store",
     "https://dev.antiaging-hufs.store",
     "https://admin.antiaging-hufs.store",
     "https://antiaging-hufsstore.netlify.app",
