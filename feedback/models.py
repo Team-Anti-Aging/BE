@@ -20,9 +20,9 @@ class Feedback(models.Model):
     feedback_image_url = models.URLField(blank=True, null=True)
 
     # AI 필드
-    ai_keywords = models.CharField(max_length=255, null=True, blank=True)
-    ai_summary = models.TextField(null=True, blank=True)
-    ai_type = models.CharField(max_length=50, null=True, blank=True)  # 문제 상황 / 요구 사항
+    ai_keyword = models.CharField(max_length=255, null=True, blank=True)
+    ai_situation = models.TextField(null=True, blank=True)
+    ai_demand = models.TextField(null=True, blank=True)
     ai_importance = models.IntegerField(null=True, blank=True)    # 중요도
     ai_expected_duration = models.CharField(max_length=20, null=True, blank=True)  # 예상 소요
     ai_solution = models.TextField(null=True, blank=True)                     # 추천 해결 방안

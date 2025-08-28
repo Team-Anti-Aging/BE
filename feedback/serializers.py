@@ -57,6 +57,14 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
             'feedback_content',
             'feedback_image',
             'feedback_image_url',
+            # AI
+            'ai_keyword',
+            'ai_situation',
+            'ai_demand',
+            'ai_importance',
+            'ai_expected_duration',
+            'ai_solution',
+            'ai_note'
         ]
         read_only_fields = ('feedback_image_url',)
 
@@ -65,31 +73,31 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
         validated_data.pop('feedback_image',None)
         return Feedback.objects.create(**validated_data)
     
-class FeedbackAISerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Feedback
-        fields = [
-            'ai_keywords',
-            'ai_summary',
-            'ai_type',
-            'ai_importance',
-            'ai_expected_duration',
-            'ai_solution',
-            'ai_note',
-        ]
-        read_only_fields = []
+# class FeedbackAISerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Feedback
+#         fields = [
+#             'ai_keywords',
+#             'ai_summary',
+#             'ai_type',
+#             'ai_importance',
+#             'ai_expected_duration',
+#             'ai_solution',
+#             'ai_note',
+#         ]
+#         read_only_fields = []
 
-class UploadFeedbackSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Feedback
-        fields = [
-            'content',
-            'ai_category',
-            'ai_keywords',
-            'ai_type',
-            'ai_summary',
-        ]
-        read_only_fields = ['content']
+# class UploadFeedbackSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Feedback
+#         fields = [
+#             'content',
+#             'ai_category',
+#             'ai_keywords',
+#             'ai_type',
+#             'ai_summary',
+#         ]
+#         read_only_fields = ['content']
 
 class OnlyFeedbackSerializer(serializers.ModelSerializer):
     class Meta:
@@ -109,8 +117,8 @@ class OnlyFeedbackSerializer(serializers.ModelSerializer):
             'updated_at',
             'status',
             'ai_keywords',
-            'ai_summary',
-            'ai_type',
+            'ai_situation',
+            'ai_demand',
             'ai_importance',
             'ai_expected_duration',
             'ai_solution',
