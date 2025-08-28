@@ -68,7 +68,6 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
             'ai_demand',
             'ai_importance',
             'ai_expected_duration',
-            'ai_solution',
             'ai_note'
         ]
         read_only_fields = ('id', 'user', 'feedback_image_url', 'created_at', 'updated_at', 'status')
@@ -83,7 +82,7 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Feedback
 #         fields = [
-#             'ai_keywords',
+#             'ai_keyword',
 #             'ai_summary',
 #             'ai_type',
 #             'ai_importance',
@@ -122,12 +121,11 @@ class OnlyFeedbackSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             'status',
-            'ai_keywords',
+            'ai_keyword',
             'ai_situation',
             'ai_demand',
             'ai_importance',
             'ai_expected_duration',
-            'ai_solution',
             'ai_note'
         ]
         read_only_fields = [
