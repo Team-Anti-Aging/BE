@@ -14,6 +14,7 @@ urlpatterns = [
     path('recent/<str:walktrail_name>/', RecentFeedbackView.as_view(), name='recent_feedback'), # 특정 산책로의 최근 피드백 (전체)
     path('recent/<str:walktrail_name>/<int:pk>/', RecentFeedbackView.as_view(), name='recent_feedback_specific'), # 특정 산책로의 최근 피드백 (특정 1개)
 
+    path('monthstats/<str:walktrail_name>/', MonthlyStatsView.as_view(), name='monthly_stats'),
     path('aireport/<str:walktrail_name>/', AIReportOpenAIView.as_view(), name='ai_report'),
 
     path('feedback/<str:walktrail_name>/', Walktrail_feedback.as_view(), name='walktrail_feedback'), # 각 산책로별 피드백 상세 리스트업 페이지

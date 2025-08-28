@@ -2,7 +2,8 @@ import boto3
 import openai
 from uuid import uuid4
 from django.conf import settings
-from rest_framework import generics, permissions
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, permissions, status
 from .models import *
 from .models import Response as ResponseModel
 from .serializers import *
@@ -152,14 +153,12 @@ class ResponseCreateView(generics.CreateAPIView):
 
             image_url = f"https://{bucket_name}.s3.amazonaws.com/{file_key}"
         
-        # serializer.save()를 한 번만 호출하여 모든 데이터를 저장
         serializer.save(
             admin=self.request.user,
             feedback=feedback,
             response_image_url=image_url
         )
 
-        # Feedback 상태를 업데이트
         feedback.status = 'completed'
         feedback.save()
     
@@ -179,6 +178,77 @@ class RespondedFeedbackView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)  # DRF 응답 객체로 반환
+
+class MonthlyStatsView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, walktrail_name):
+        walktrail = get_object_or_404(WalkTrail, name=walktrail_name)
+        year = request.data.get('year')
+        month = request.data.get('month')
+
+        if not year or not month:
+            year, month = now().year, now().month
+        
+        qs = Feedback.objects.filter(
+            walktrail=walktrail,
+            created_at__year=year,
+            created_at__month=month
+        )
+
+        total_feedbacks = qs.count()
+
+        type_counts = qs.values('type').annotate(count=Count('id'))
+        type_dict = {item['type']: item['count'] for item in type_counts}
+        type_ratios = {
+            type: round((cnt/total_feedbacks)*100, 1) if total_feedbacks > 0 else 0
+            for type, cnt in type_dict.items()
+        }
+
+        category_counts = qs.values('category').annotate(count=Count('id'))
+        category_dict = {item["category"]: item["count"] for item in category_counts}
+
+        category_ratios = {
+            category: round((cnt/total_feedbacks)*100, 1) if total_feedbacks > 0 else 0
+            for category, cnt in category_dict.items()
+        }
+
+        completed_counts = qs.filter(status='completed').count()
+
+        status_counts = {
+            "처리 완료": completed_counts,
+            "진행 중": qs.filter(status='in_progress').count()
+        }
+
+        stats, created = Monthly_ReportStats.objects.update_or_create(
+            walktrail=walktrail,
+            year=year,
+            month=month,
+            defaults={
+                "total_feedbacks": total_feedbacks,
+                "type_counts": type_dict,
+                "type_ratios": type_ratios,
+                "category_counts": category_dict,
+                "category_ratios": category_ratios,
+                "completed_counts": completed_counts,
+                "status_counts": status_counts,
+            }
+        )
+
+        return Response (
+            {
+                "산책로명": walktrail.name,
+                "연도": year,
+                "월": month,
+                "산책로 피드백 건수 계": total_feedbacks,
+                "피드백 유형별 건수": type_dict,
+                "피드백 유형별 비율 (단위: %)": type_ratios,
+                "피드백 카테고리별 건수": category_dict,
+                "피드백 카테고리별 비율 (단위: %)": category_ratios,
+                "완료된 피드백 건수": completed_counts,
+                "상태별 피드백 건수": status_counts,
+            }
+        )
 
 class AIReportOpenAIView(APIView):
     """

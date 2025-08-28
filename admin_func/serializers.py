@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Response, AIReport
+from .models import Response, AIReport, Monthly_ReportStats
 from walktrails.models import WalkTrail,Route
 from feedback.models import Feedback
 
@@ -113,6 +113,12 @@ class RespondedFeedbackSerializer(serializers.ModelSerializer):
 
     def get_response_image_url(self, obj):
         return obj.response_image_url if obj.response_image_url else None
+
+class MonthlyReportStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Monthly_ReportStats
+        fields = '__all__'
+
 
 class AIReportSerializer(serializers.ModelSerializer):
     class Meta:
