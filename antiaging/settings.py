@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'walktrails',
     'admin_func',
     'mypage',
+    'report',
 ]
 
 OPENAI_API_KEY = config("OPENAI_API_KEY")
