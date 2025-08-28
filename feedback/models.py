@@ -22,8 +22,8 @@ class Feedback(models.Model):
     # AI 필드
     ai_keyword = models.CharField(max_length=255, null=True, blank=True)
     ai_situation = models.TextField(null=True, blank=True)
-    ai_demand = models.TextField(max_length=20, null=True, blank=True)
-    ai_importance = models.CharField(null=True, blank=True)
+    ai_demand = models.TextField(null=True, blank=True)
+    ai_importance = models.CharField(max_length=20, null=True, blank=True)
     ai_expected_duration = models.CharField(max_length=20, null=True, blank=True)
     ai_note = models.TextField(null=True, blank=True)
 

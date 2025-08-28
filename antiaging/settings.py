@@ -267,7 +267,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://dev.antiaging-hufs.store",
     "https://admin.antiaging-hufs.store",
     "https://antiaging-hufsstore.netlify.app",
-    "https://antiaginghufs.store"
+    "https://antiaginghufs.store",
+    "https://anti-aging-fe.vercel.app"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
