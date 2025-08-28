@@ -208,7 +208,7 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED': False,
 }
 
-CSRF_TRUSTED_ORIGINS = ["https://dev.antiaging-hufs.store", "https://admin.antiaging-hufs.store",]
+CSRF_TRUSTED_ORIGINS = ["https://antiaging-hufs.store", "https://dev.antiaging-hufs.store", "https://admin.antiaging-hufs.store", "https://www.antiaging-hufs.store"]
 CSRF_COOKIE_SECURE = True
 
 
@@ -267,7 +267,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://dev.antiaging-hufs.store",
     "https://admin.antiaging-hufs.store",
     "https://antiaging-hufsstore.netlify.app",
-    "http://antiaginghufs.store"
+    "https://antiaginghufs.store"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
