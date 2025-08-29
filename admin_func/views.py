@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from feedback.models import Feedback, WalkTrail
 from django.db.models import Count, Q, F
 from django.utils.timezone import now
+from django.utils import timezone
 from feedback.serializers import OnlyFeedbackSerializer
 
 # 각 산책로별 피드백 현황
@@ -85,7 +86,7 @@ class TodayFeedbackView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        today = now().date()
+        today = timezone.localdate()
         return WalkTrail.objects.annotate(
             suggestion_count=Count(
                 'feedback',
