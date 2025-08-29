@@ -21,7 +21,6 @@ from botocore.exceptions import ClientError, NoCredentialsError
 #     - ai_demand: 요구사항을 적어주고, 없으면 null로
 #     - ai_importance: "높음" | "중간" | "낮음" (높음: 안전 관련 / 중간: 불편하지만 긴급하진 않음 / 낮음: 개선되면 좋지만 시급하지 않음)
 #     - ai_expected_duration: "단기" | "중장기".
-#     - ai_solution: 실행 가능한 조치 1문장만.
 #     - ai_note: 그 외 특이사항, 없으면 null
 #     }
 #     """

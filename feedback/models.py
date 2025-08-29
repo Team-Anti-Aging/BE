@@ -25,7 +25,6 @@ class Feedback(models.Model):
     ai_demand = models.TextField(null=True, blank=True)
     ai_importance = models.CharField(max_length=20, null=True, blank=True)
     ai_expected_duration = models.CharField(max_length=20, null=True, blank=True)
-    ai_note = models.TextField(null=True, blank=True)
 
     # 기본 필드
     created_at = models.DateTimeField(auto_now_add=True)
