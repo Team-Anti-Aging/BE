@@ -25,7 +25,7 @@ urlpatterns = [
     path('feedback/', include('feedback.urls')),
     path('walktrails/', include('walktrails.urls')),
     path('mypage/', include('mypage.urls')),
-    # path('report/', include('report.urls')),
+    path('report/', include('report.urls')),
 
 
     # Swagger

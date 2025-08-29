@@ -68,7 +68,6 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
             'ai_demand',
             'ai_importance',
             'ai_expected_duration',
-            'ai_note'
         ]
         read_only_fields = ('id', 'user', 'feedback_image_url', 'created_at', 'updated_at', 'status')
 
@@ -88,7 +87,6 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
 #             'ai_importance',
 #             'ai_expected_duration',
 #             'ai_solution',
-#             'ai_note',
 #         ]
 #         read_only_fields = []
 
@@ -126,7 +124,6 @@ class OnlyFeedbackSerializer(serializers.ModelSerializer):
             'ai_demand',
             'ai_importance',
             'ai_expected_duration',
-            'ai_note'
         ]
         read_only_fields = [
             'id',
