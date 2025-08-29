@@ -74,11 +74,17 @@ class ResponseDetailSerializer(serializers.ModelSerializer):
 
 class ResponseCreateSerializer(serializers.ModelSerializer):
     response_image = serializers.ImageField(write_only=True, required=False) # 입력 전용
-    
+
     class Meta:
         model = Response
-        fields = ['response_content', 'response_image']
+        fields = ['admin','feedback','response_content', 'response_image', 'response_image_url']
+        read_only_fields = ['admin', 'feedback', 'response_image_url']
 
+    def create(self, validated_data):
+        admin = self.context['request'].user
+        validated_data['admin'] = admin
+        validated_data.pop('response_image',None)
+        return Response.objects.create(**validated_data)
 
 class RespondedFeedbackSerializer(serializers.ModelSerializer):
     walk_trail = serializers.SerializerMethodField()
