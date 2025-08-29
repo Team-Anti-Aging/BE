@@ -104,7 +104,7 @@ class RecentFeedbackView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        today = now().date()
+        today = timezone.localdate()
         walktrail_name = self.kwargs.get('walktrail_name')
         pk = self.kwargs.get('pk')  # 선택적으로 들어올 수 있음
         qs = Feedback.objects.filter(walktrail__name=walktrail_name, created_at__date=today, status='in_progress')
