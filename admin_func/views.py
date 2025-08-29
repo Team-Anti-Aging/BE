@@ -270,7 +270,7 @@ class AIReportOpenAIView(APIView):
         month = request.data.get('month')
 
         # Feedback 조회
-        feedbacks = Feedback.objects.filter(walktrail=walktrail, ai_importance="높음",created_at__year=year, created_at__month=month)
+        feedbacks = Feedback.objects.filter(walktrail=walktrail,created_at__year=year, created_at__month=month)
         if not feedbacks.exists():
             return Response({"message": "해당 산책로 피드백이 없습니다."})
 
