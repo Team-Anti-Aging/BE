@@ -32,8 +32,9 @@ def create_ai_report(title, section, style, instruction, docs):
     You are a municipal official drafting an official report. 
     Style: formal, {style}
     [출력 규칙]
-    현재 보고서의 제목은 {title}이고(출력값에서는 제외), 
+    현재 보고서의 제목은 {title}이고, 
     {section}를 기준으로 항목을 나눠서 작성해줘
+    항목 별로는 줄바꿈해줘
     """
     CONTENT ="""
     [작성 지시] {instruction}
