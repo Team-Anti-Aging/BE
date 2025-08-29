@@ -122,45 +122,48 @@ class RecentFeedbackView(generics.ListAPIView):
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()
     serializer_class = ResponseCreateSerializer
-    permission_classes = [permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAdminUser]
 
     def perform_create(self, serializer):
-        pk = self.kwargs.get('pk')
-        feedback = Feedback.objects.get(pk=pk)
+        try:
+            pk = self.kwargs.get('pk')
+            feedback = get_object_or_404(Feedback, pk=pk)
 
-        image_url = None
+            image = self.request.FILES.get('response_image')
+            image_url = None
 
-        image = self.request.FILES.get('response_image')
+            if image:
+                try:
+                    s3 = boto3.client(
+                        's3',
+                        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                        region_name=settings.AWS_S3_REGION_NAME,
+                    )
+                    bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+                    ext = image.name.split('.')[-1]
+                    file_key = f"response_images/{uuid4()}.{ext}"
 
-        if image:
-            s3 = boto3.client(
-                's3',
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                region_name=settings.AWS_S3_REGION_NAME,
-            )
-            bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-            ext = image.name.split('.')[-1]
-            file_key = f"response_images/{uuid4()}.{ext}"
+                    s3.upload_fileobj(
+                        image,
+                        bucket_name,
+                        file_key,
+                        ExtraArgs={'ContentType': image.content_type}
+                    )
+                    image_url = f"https://{bucket_name}.s3.amazonaws.com/{file_key}"
+                except Exception as e:
+                    print("S3 Upload Error:", e)
 
-            s3.upload_fileobj(
-                image,
-                bucket_name,
-                file_key,
-                ExtraArgs={'ContentType': image.content_type}
-            )
+            instance = serializer.save(admin=self.request.user, feedback=feedback)
+            print(image_url)
+            if image_url:
+                serializer.save(response_image_url=image_url)
 
-            image_url = f"https://{bucket_name}.s3.amazonaws.com/{file_key}"
-        
-        serializer.save(
-            admin=self.request.user,
-            feedback=feedback,
-            response_image_url=image_url
-        )
+            feedback.status = 'completed'
+            feedback.save()
 
-        feedback.status = 'completed'
-        feedback.save()
-    
+        except Exception as e:
+            print("Perform Create Error:", e)
 
 class RespondedFeedbackView(generics.ListAPIView):
     serializer_class = RespondedFeedbackSerializer
@@ -237,6 +240,18 @@ class MonthlyStatsView(APIView):
 
         return Response({
             status.HTTP_200_OK if created else status.HTTP_200_OK: "Created" if created else "Updated",
+            "data": {
+                "walktrail": walktrail.name,
+                "year": year,
+                "month": month,
+                "total_feedbacks": total_feedbacks,
+                "type_counts": type_dict,
+                "type_ratios": type_ratios,
+                "category_counts": category_dict,
+                "category_ratios": category_ratios,
+                "completed_counts": completed_counts,
+                "status_counts": status_counts,
+            }
         })
 
 

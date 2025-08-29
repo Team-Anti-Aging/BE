@@ -57,9 +57,6 @@ class GetFeedback(generics.RetrieveAPIView):
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
 
-
-
-
 # UnrespondedFeedback View
 class AllFeedback(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
