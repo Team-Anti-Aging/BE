@@ -5,8 +5,6 @@ from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import *
 from .serializers import *
-from openai import OpenAI
-from decouple import config
 from rest_framework.exceptions import ValidationError
 from botocore.exceptions import ClientError, NoCredentialsError
 
@@ -22,7 +20,7 @@ from botocore.exceptions import ClientError, NoCredentialsError
 #     - ai_situation: 문제 상황을 적어주고, 없으면 null로
 #     - ai_demand: 요구사항을 적어주고, 없으면 null로
 #     - ai_importance: "높음" | "중간" | "낮음" (높음: 안전 관련 / 중간: 불편하지만 긴급하진 않음 / 낮음: 개선되면 좋지만 시급하지 않음)
-#     - ai_expected_duration: "긴급" | "단기" | "중장기".
+#     - ai_expected_duration: "단기" | "중장기".
 #     - ai_solution: 실행 가능한 조치 1문장만.
 #     - ai_note: 그 외 특이사항, 없으면 null
 #     }
@@ -32,7 +30,7 @@ from botocore.exceptions import ClientError, NoCredentialsError
 #     resp = client.chat.completions.create(
 #         model="gpt-4o-mini",
 #         temperature=0.1,
-#         response_format={"type": "json_object"},  # 무조건 JSON만 나오게 강제
+#         response_format={"type": "json_object"},
 #         messages=[
 #         {"role": "system", "content": system},
 #         {"role": "user", "content": content},
