@@ -32,7 +32,6 @@ class Monthly_ReportStats(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    temp_field = models.BooleanField(default=False)  # 임시 필드
 
     class Meta:
         unique_together = ("walktrail", "year", "month")
