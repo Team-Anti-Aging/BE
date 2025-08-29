@@ -23,6 +23,7 @@ class Monthly_ReportStats(models.Model):
 
     total_feedbacks = models.IntegerField(default=0)
     type_counts = models.JSONField(default=dict)
+    type_ratios = models.JSONField(default=dict)
     category_counts = models.JSONField(default=dict)
     category_ratios = models.JSONField(default=dict)
 

@@ -121,19 +121,17 @@ class RecentFeedbackView(generics.ListAPIView):
 class ResponseCreateView(generics.CreateAPIView):
     queryset = ResponseModel.objects.all()
     serializer_class = ResponseCreateSerializer
-    permission_classes = [permissions.IsAdminUser]  # 관리자만 접근 가능
+    permission_classes = [permissions.IsAdminUser]
 
     def perform_create(self, serializer):
         pk = self.kwargs.get('pk')
         feedback = Feedback.objects.get(pk=pk)
 
-        # 이미지 URL을 초기화
         image_url = None
 
         image = self.request.FILES.get('response_image')
 
         if image:
-            # S3 업로드 로직
             s3 = boto3.client(
                 's3',
                 aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
@@ -180,7 +178,8 @@ class RespondedFeedbackView(generics.ListAPIView):
         return Response(serializer.data)  # DRF 응답 객체로 반환
 
 class MonthlyStatsView(APIView):
-    permission_classes = [permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, walktrail_name):
         walktrail = get_object_or_404(WalkTrail, name=walktrail_name)
@@ -250,6 +249,9 @@ class MonthlyStatsView(APIView):
             }
         )
 
+
+
+
 class AIReportOpenAIView(APIView):
     """
     산책로 이름 기준 AI 리포트 (OpenAI 최신 API)
@@ -266,16 +268,60 @@ class AIReportOpenAIView(APIView):
         if not feedbacks.exists():
             return Response({"message": "해당 산책로 피드백이 없습니다."})
 
+        monthlyreport = Monthly_ReportStats.objects.filter(walktrail=walktrail, year=now().year, month=now().month).first()
+        if not monthlyreport:
+            return Response({"message": "해당 산책로 월간 통계가 없습니다."})
+
         # 프롬프트 생성
         feedback_texts = "\n".join(
             f"- [{f.type}] {f.category} / {f.location}: {f.feedback_content}"
             for f in feedbacks
         )
+
+        monthlyreport_texts = f"""
+        - 산책로명: {walktrail.name}
+        - 연도: {monthlyreport.year}
+        - 월: {monthlyreport.month}
+        - 산책로 피드백 건수 계: {monthlyreport.total_feedbacks}
+        - 피드백 유형별 건수: {monthlyreport.type_counts}
+        - 피드백 유형별 비율 (단위: %): {monthlyreport.type_ratios}
+        - 피드백 카테고리별 건수: {monthlyreport.category_counts}
+        - 피드백 카테고리별 비율 (단위: %): {monthlyreport.category_ratios}
+        - 완료된 피드백 건수: {monthlyreport.completed_counts}
+        - 상태별 피드백 건수: {monthlyreport.status_counts}
+        """
+
         prompt = f"""
         당신은 동대문구 산책로 개선사업 담당 관리자입니다.
         아래 피드백 데이터를 분석해서 종합 리포트를 작성해주세요.
         피드백 데이터:
         {feedback_texts}
+        월간 통계 데이터:
+        {monthlyreport_texts}
+
+        <월간보고서 양식>
+
+        1. 기본 현황 (DB 기반)
+        - 전체 민원 수 및 전월 대비 증감
+        - 산책로별 현황 요약
+        - 불편/제안 비율
+        - 카테고리별 비중
+
+        2. 분석 및 특이사항 (AI 기반)
+        - 주요 민원 유형 및 발생 원인
+        - 데이터에서 확인되는 특이사항이나 이상치
+
+        3. 우선순위 및 처리 소요 (중요도 분류)
+        - 긴급 처리 항목
+        - 단기 처리 가능 항목
+        - 중장기 개선 필요 항목
+
+        4. 결론 및 제안 (AI 기반)
+        - 이번 달 핵심 과제 요약
+        - 다음 달 대응 방향 제안
+
+        ---  
+        보고서는 한국어로 작성하며, 관리자 회의에서 바로 활용할 수 있도록 간결하고 체계적으로 정리해주세요.
         """
 
         # OpenAI 최신 API 호출
