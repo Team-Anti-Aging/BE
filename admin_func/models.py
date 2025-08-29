@@ -16,6 +16,32 @@ class Response(models.Model):
     def __str__(self):
         return f"Response to Feedback #{self.feedback} by {self.admin.nickname}" if self.admin else "Response without Admin"
 
+class Monthly_ReportStats(models.Model):
+    walktrail = models.ForeignKey(WalkTrail, on_delete=models.CASCADE, related_name="monthly_reports")
+    year= models.IntegerField()
+    month = models.IntegerField()
+
+    total_feedbacks = models.IntegerField(default=0)
+    type_counts = models.JSONField(default=dict)
+    type_ratios = models.JSONField(default=dict)
+    category_counts = models.JSONField(default=dict)
+    category_ratios = models.JSONField(default=dict)
+
+    completed_counts = models.IntegerField(default=0)
+    status_counts = models.JSONField(default=dict)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("walktrail", "year", "month")
+        ordering = ["-year", "-month"]
+
+    def __str__(self):
+        return f"Monthly Report for {self.walktrail.name} - {self.year}/{self.month}"
+
+
+
 class AIReport(models.Model):
     walktrail = models.ForeignKey(WalkTrail, on_delete=models.CASCADE, related_name="ai_reports")
     report_text = models.TextField()  # GPT가 생성한 전체 리포트
