@@ -7,7 +7,6 @@ from .models import *
 from .serializers import *
 from rest_framework.exceptions import ValidationError
 from botocore.exceptions import ClientError, NoCredentialsError
-from .services.ai_feedback import apply_ai_analysis_to_feedbacks
 
 class FeedbackUploadViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -69,31 +68,13 @@ class AllFeedback(generics.ListAPIView):
         type = self.kwargs.get('type')
         return Feedback.objects.filter(walktrail__name=walktrail_name, status=status, type=type).order_by('-created_at')
 
-class FeedbackAIUpdateView(generics.UpdateAPIView):
-    """
-    기존 Feedback 데이터에 대해 AI 분석 결과를 업데이트합니다.
-    """
-    queryset = Feedback.objects.all()
-    serializer_class = FeedbackSerializer
-    lookup_field = 'id'  # URL에서 피드백 ID 기준
+class Feedback_search_view(generics.ListAPIView):
+    serializer_class = CreateFeedbackSerializer
+    pagination_class = None
 
-    def patch(self, request, *args, **kwargs):
-        feedbacks = self.get_objects.all()  # id로 Feedback 가져오기
-
-        for feedback in feedbacks:
-            # AI 분석 실행
-            ai_result = apply_ai_analysis_to_feedbacks(feedback.feedback_content)
-
-        # AI 결과 필드 적용
-        # ai_result는 JSON 형태라고 가정
-        feedback.ai_keyword = ai_result.get("ai_keyword")
-        feedback.ai_situation = ai_result.get("ai_situation")
-        feedback.ai_demand = ai_result.get("ai_demand")
-        feedback.ai_importance = ai_result.get("ai_importance")
-        feedback.ai_expected_duration = ai_result.get("ai_expected_duration")
-        feedback.ai_note = ai_result.get("ai_note")
-
-        feedback.save()
-
-        serializer = self.get_serializer(feedback)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        qs = Feedback.objects.all()
+        keyword = (self.request.query_params.get("keyword") or "").strip()
+        if not keyword:
+            return qs.none()
+        return qs.filter(ai_keyword__icontains=keyword).order_by("-id")
