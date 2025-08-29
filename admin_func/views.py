@@ -234,41 +234,31 @@ class MonthlyStatsView(APIView):
             }
         )
 
-        return Response (
-            {
-                "산책로명": walktrail.name,
-                "연도": year,
-                "월": month,
-                "산책로 피드백 건수 계": total_feedbacks,
-                "피드백 유형별 건수": type_dict,
-                "피드백 유형별 비율 (단위: %)": type_ratios,
-                "피드백 카테고리별 건수": category_dict,
-                "피드백 카테고리별 비율 (단위: %)": category_ratios,
-                "완료된 피드백 건수": completed_counts,
-                "상태별 피드백 건수": status_counts,
-            }
-        )
+        return Response({
+            status.HTTP_200_OK if created else status.HTTP_200_OK: "Created" if created else "Updated",
+        })
 
 
 
 
 class AIReportOpenAIView(APIView):
-    """
-    산책로 이름 기준 AI 리포트 (OpenAI 최신 API)
-    """
-    def get(self, request, walktrail_name):
+    def post(self, request, walktrail_name):
         # 산책로 객체 가져오기
         try:
             walktrail = WalkTrail.objects.get(name=walktrail_name)
         except WalkTrail.DoesNotExist:
             return Response({"error": "해당 산책로가 존재하지 않습니다."}, status=404)
 
+        # 월과 연도 가져오기
+        year = request.data.get('year')
+        month = request.data.get('month')
+
         # Feedback 조회
-        feedbacks = Feedback.objects.filter(walktrail=walktrail)
+        feedbacks = Feedback.objects.filter(walktrail=walktrail, ai_importance="높음",created_at__year=year, created_at__month=month)
         if not feedbacks.exists():
             return Response({"message": "해당 산책로 피드백이 없습니다."})
 
-        monthlyreport = Monthly_ReportStats.objects.filter(walktrail=walktrail, year=now().year, month=now().month).first()
+        monthlyreport = Monthly_ReportStats.objects.filter(walktrail=walktrail, year=year, month=month).first()
         if not monthlyreport:
             return Response({"message": "해당 산책로 월간 통계가 없습니다."})
 
@@ -299,29 +289,35 @@ class AIReportOpenAIView(APIView):
         월간 통계 데이터:
         {monthlyreport_texts}
 
-        <월간보고서 양식>
-
+        보고서 양식:
         1. 기본 현황 (DB 기반)
-        - 전체 민원 수 및 전월 대비 증감
-        - 산책로별 현황 요약
+        - 산책로 이름
+        - 전체 민원 수
         - 불편/제안 비율
         - 카테고리별 비중
 
         2. 분석 및 특이사항 (AI 기반)
-        - 주요 민원 유형 및 발생 원인
-        - 데이터에서 확인되는 특이사항이나 이상치
+        - 주요 민원 유형
+        - 데이터에서 확인되는 특이사항, 이상치, 주목할 만한 패턴
 
-        3. 우선순위 및 처리 소요 (중요도 분류)
-        - 긴급 처리 항목
-        - 단기 처리 가능 항목
-        - 중장기 개선 필요 항목
+        3. 우선순위 및 처리 소요 (ai_expected_duration 값에 따른 분류)
+        - 긴급 처리 항목 (즉시 대응 필요): ai_expected_duration 필드값이 "긴급"인 항목
+        - 단기 처리 가능 항목 (이번 달 내 해결 가능): ai_expected_duration 필드값이 "단기"인 항목
+        - 중장기 개선 필요 항목 (추후 계획 수립 필요): ai_expected_duration 필드값이 "중장기"인 항목
 
         4. 결론 및 제안 (AI 기반)
-        - 이번 달 핵심 과제 요약
-        - 다음 달 대응 방향 제안
+        - 이번 달 핵심 과제 요약: ai_expected_duration 필드값이 긴급 내지는 단기인 항목을 우선적으로 반영하여 리스트 형태로 반환할 것
+        - 다음 달 대응 방향 제안: feedback 데이터의 내용을 총체적으로 고려하여 문제 해결 방법의 사례를 첨언하여 리스트 형태로 반환할 것.
 
-        ---  
-        보고서는 한국어로 작성하며, 관리자 회의에서 바로 활용할 수 있도록 간결하고 체계적으로 정리해주세요.
+        조건:
+        - 한국어로 작성
+        - 각 항목별 소제목 명확히 표시
+        - 글머리표와 번호를 적절히 활용하여 가독성 높이기
+        - 필드의 데이터값을 임의로 적용 금지, 반드시 적힌 내용대로만 분류
+        - 데이터에서 확인 가능한 내용만 활용, 추가 설명 금지
+        - 문장은 간결하고 실무 회의용으로 체계적 작성
+
+        이 보고서에 포함되지 않은 다른 텍스트나 불필요한 서술은 작성하지 마세요.
         """
 
         # OpenAI 최신 API 호출
@@ -343,6 +339,8 @@ class AIReportOpenAIView(APIView):
             walktrail=walktrail,
             defaults={"report_text": report_text}
         )
+
+        print(report_text)
 
         # 프론트 반환
         return Response({

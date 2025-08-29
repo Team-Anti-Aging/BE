@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('feedback', '0002_remove_feedback_temp_field'),
+        ('feedback', '0001_initial'),
     ]
 
     operations = [
